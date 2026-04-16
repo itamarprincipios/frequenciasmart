@@ -18,13 +18,13 @@ $erros = [];
 
 if (empty($nome))        $erros[] = 'O nome é obrigatório.';
 if (strlen($nome) > 255) $erros[] = 'Nome muito longo (máx. 255 caracteres).';
-if (empty($matricula))   $erros[] = 'A matrícula é obrigatória.';
+if (empty($matricula))   $erros[] = 'A matricula é obrigatória.';
 if (!$turmaId)           $erros[] = 'Selecione uma turma.';
 
-// Unicidade da matrícula (exceto o próprio aluno)
+// Unicidade da matricula (exceto o próprio aluno)
 if ($matricula) {
     $existe = db_one("SELECT id FROM alunos WHERE matricula = ? AND id != ?", [$matricula, $id]);
-    if ($existe) $erros[] = 'Esta matrícula já está cadastrada para outro aluno.';
+    if ($existe) $erros[] = 'Esta matricula já está cadastrada para outro aluno.';
 }
 
 if ($turmaId) {

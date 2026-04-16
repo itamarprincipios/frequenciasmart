@@ -1,10 +1,11 @@
 <?php
 // ===================================================
-// index.php — Roteador principal do EduTrack
+// index.php — Roteador principal do FrequenciaSmart
 // ===================================================
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+header('Content-Type: text/html; charset=utf-8');
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';

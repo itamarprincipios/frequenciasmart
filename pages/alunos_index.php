@@ -40,7 +40,7 @@ include __DIR__ . '/../layout/header.php';
         <form method="GET" action="/alunos" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end">
             <div class="form-group" style="margin:0;flex:2;min-width:200px">
                 <label>Buscar aluno</label>
-                <input type="text" name="busca" value="<?= e($busca) ?>" class="form-control" placeholder="Nome ou matrícula...">
+                <input type="text" name="busca" value="<?= e($busca) ?>" class="form-control" placeholder="Nome ou matricula...">
             </div>
             <div class="form-group" style="margin:0;flex:1;min-width:180px">
                 <label>Turma</label>

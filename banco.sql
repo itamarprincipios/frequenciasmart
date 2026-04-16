@@ -1,5 +1,5 @@
 -- ============================================================
--- banco.sql — EduTrack: Script completo de criação do banco
+-- banco.sql — FrequenciaSmart: Script completo de criação do banco
 -- Execute este arquivo no phpMyAdmin ou via MySQL CLI
 -- ============================================================
 
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `notificacoes` (
 -- Usuário administrador
 -- Senha padrão: admin123  (troque após o primeiro login!)
 INSERT IGNORE INTO `users` (`nome`, `email`, `password`, `role`, `ativo`) VALUES
-('Administrador', 'admin@edutrack.com', '$2y$10$cWk2G.ejVbwHGoYxwfPVKuoGzlUxUflUm9ZVkrKkDEFUk0O8qYMUS', 'DIRETOR', 1);
+('Administrador', 'admin@frequenciasmart.com', '$2y$10$cWk2G.ejVbwHGoYxwfPVKuoGzlUxUflUm9ZVkrKkDEFUk0O8qYMUS', 'DIRETOR', 1);
 
 -- Turmas de exemplo
 INSERT IGNORE INTO `turmas` (`nome`, `turno`, `ano_letivo`, `ativa`, `qr_token`) VALUES

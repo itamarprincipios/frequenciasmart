@@ -46,7 +46,7 @@ $payload = json_encode(['aluno_id' => (int)$aluno->id, 'qr_token' => $aluno->qr_
 
 <div class="screen-bar">
     <h2>📱 QR Code do Aluno</h2>
-    <span style="font-size:.8rem;opacity:.8">EduTrack</span>
+    <span style="font-size:.8rem;opacity:.8">FrequenciaSmart</span>
 </div>
 
 <div class="actions">
@@ -56,7 +56,7 @@ $payload = json_encode(['aluno_id' => (int)$aluno->id, 'qr_token' => $aluno->qr_
 
 <div class="container">
     <div class="qr-card">
-        <div class="school-name">EduTrack – Controle de Frequência</div>
+        <div class="school-name">FrequenciaSmart – Controle de Frequência</div>
 
         <img src="<?= e(qr_url($payload, 220)) ?>" alt="QR Code de <?= e($aluno->nome) ?>"
              style="width:220px;height:220px;border-radius:8px">

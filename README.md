@@ -1,4 +1,4 @@
-# EduTrack — Sistema de Frequência Escolar (PHP Puro)
+# FrequenciaSmart — Sistema de Frequência Escolar (PHP Puro)
 
 Sistema de controle de frequência escolar sem frameworks. **PHP puro + MySQL + PDO.**
 
@@ -19,7 +19,7 @@ Sistema de controle de frequência escolar sem frameworks. **PHP puro + MySQL + 
 
 | Campo | Valor |
 |---|---|
-| E-mail | `admin@edutrack.com` |
+| E-mail | `admin@frequenciasmart.com` |
 | Senha | `admin123` |
 
 > ⚠️ **Troque a senha** após o primeiro acesso!

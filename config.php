@@ -1,6 +1,6 @@
 <?php
 // ===================================================
-// config.php — Configurações do EduTrack
+// config.php — Configurações do FrequenciaSmart
 // Detecta automaticamente: local (XAMPP) ou produção (Hostinger)
 // ===================================================
 
@@ -10,7 +10,7 @@ $isLocal = in_array($host, ['localhost', '127.0.0.1', 'frequenciasmart.local']);
 if ($isLocal) {
     // ---- AMBIENTE LOCAL (XAMPP) ----
     define('DB_HOST', 'localhost');
-    define('DB_NAME', 'edutrack');
+    define('DB_NAME', 'frequenciasmart');
     define('DB_USER', 'root');
     define('DB_PASS', '');
     define('APP_URL',  'http://localhost');
@@ -24,5 +24,5 @@ if ($isLocal) {
 }
 
 define('DB_CHARSET',        'utf8mb4');
-define('APP_NAME',          'EduTrack');
+define('APP_NAME',          'FrequenciaSmart');
 define('SESSION_LIFETIME',  7200); // 2 horas

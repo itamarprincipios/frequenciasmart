@@ -129,7 +129,7 @@
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <h2>📚 EduTrack</h2>
+        <h2>📚 FrequenciaSmart</h2>
         <small>Sistema de Frequência</small>
     </div>
     <nav>
@@ -194,7 +194,7 @@
             <button class="menu-toggle" onclick="toggleMenu()">
                 <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
-            <h1><?= e($tituloPagina ?? 'EduTrack') ?></h1>
+            <h1><?= e($tituloPagina ?? 'FrequenciaSmart') ?></h1>
         </div>
         <span style="font-size:.8rem; color:#64748b"><?= date('d/m/Y') ?></span>
     </div>
