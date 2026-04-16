@@ -5,7 +5,7 @@
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'u199671261_dbfsmart');
-define('DB_USER', 'u199671261_dbfsmart');
+define('DB_USER', 'u199671261_admfsmart');
 define('DB_PASS', 'Pw^4TOVh2');
 define('DB_CHARSET', 'utf8mb4');
 
