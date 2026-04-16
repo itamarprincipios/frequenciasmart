@@ -1,6 +1,3 @@
-# Configurações locais (NÃO enviar para o repositório)
-config.php
-
 # Sessões PHP
 /sessions/
 
