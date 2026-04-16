@@ -1,16 +1,28 @@
 <?php
 // ===================================================
-// config.php — Configurações do EduTrack (Produção)
+// config.php — Configurações do EduTrack
+// Detecta automaticamente: local (XAMPP) ou produção (Hostinger)
 // ===================================================
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'u199671261_dbfsmart');
-define('DB_USER', 'u199671261_admfsmart');
-define('DB_PASS', 'Pw^4TOVh2');
-define('DB_CHARSET', 'utf8mb4');
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$isLocal = in_array($host, ['localhost', '127.0.0.1', 'frequenciasmart.local']);
 
-define('APP_NAME', 'EduTrack');
-define('APP_URL', 'https://frequenciasmart.cloud');
+if ($isLocal) {
+    // ---- AMBIENTE LOCAL (XAMPP) ----
+    define('DB_HOST', 'localhost');
+    define('DB_NAME', 'edutrack');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+    define('APP_URL',  'http://localhost');
+} else {
+    // ---- PRODUÇÃO (Hostinger) ----
+    define('DB_HOST', 'localhost');
+    define('DB_NAME', 'u199671261_dbfsmart');
+    define('DB_USER', 'u199671261_admfsmart');
+    define('DB_PASS', 'Pw^4TOVh2');
+    define('APP_URL',  'https://frequenciasmart.cloud');
+}
 
-// Duração da sessão em segundos (2 horas)
-define('SESSION_LIFETIME', 7200);
+define('DB_CHARSET',        'utf8mb4');
+define('APP_NAME',          'EduTrack');
+define('SESSION_LIFETIME',  7200); // 2 horas

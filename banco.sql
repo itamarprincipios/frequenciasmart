@@ -88,13 +88,13 @@ CREATE TABLE IF NOT EXISTS `notificacoes` (
 -- Usuário administrador
 -- Senha padrão: admin123  (troque após o primeiro login!)
 INSERT IGNORE INTO `users` (`nome`, `email`, `password`, `role`, `ativo`) VALUES
-('Administrador', 'admin@edutrack.com', '$2y$12$Q6GHGjpvhP0fklxf.Yd8kuXgNNMvH05zFWqmHe0MXiB3O5OiN9W3O', 'DIRETOR', 1);
+('Administrador', 'admin@edutrack.com', '$2y$10$cWk2G.ejVbwHGoYxwfPVKuoGzlUxUflUm9ZVkrKkDEFUk0O8qYMUS', 'DIRETOR', 1);
 
 -- Turmas de exemplo
 INSERT IGNORE INTO `turmas` (`nome`, `turno`, `ano_letivo`, `ativa`, `qr_token`) VALUES
-('1º Ano A', 'MANHA', YEAR(CURDATE()), 1, CONCAT('TRM_', UPPER(HEX(RANDOM_BYTES(5))))),
-('2º Ano B', 'TARDE', YEAR(CURDATE()), 1, CONCAT('TRM_', UPPER(HEX(RANDOM_BYTES(5))))),
-('3º Ano C', 'NOITE', YEAR(CURDATE()), 1, CONCAT('TRM_', UPPER(HEX(RANDOM_BYTES(5)))));
+('1º Ano A', 'MANHA', YEAR(CURDATE()), 1, 'TRM_A1B2C3D4E5'),
+('2º Ano B', 'TARDE', YEAR(CURDATE()), 1, 'TRM_F6G7H8I9J0'),
+('3º Ano C', 'NOITE', YEAR(CURDATE()), 1, 'TRM_K1L2M3N4O5');
 
 SET FOREIGN_KEY_CHECKS = 1;
 
