@@ -130,7 +130,13 @@
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <h2>📚 FrequenciaSmart</h2>
-        <small><?= e($usuario['escola_nome'] ?? 'Sistema de Frequência') ?></small>
+        <small>
+            <?php if ($usuario['is_super_admin'] ?? false): ?>
+                ✨ Administrativo Master
+            <?php else: ?>
+                <?= e($usuario['escola_nome'] ?? 'Sistema de Frequência') ?>
+            <?php endif; ?>
+        </small>
     </div>
     <nav>
         <?php if (in_array($role, ['DIRETOR','VICE'])): ?>
@@ -179,17 +185,31 @@
         <?php endif; ?>
 
         <?php if ($usuario['is_super_admin'] ?? 0): ?>
-        <a href="/escolas" class="nav-item <?= rota_ativa('escolas') ?>" style="margin-top:1rem;color:#fbbf24">
+        <a href="/escolas" class="nav-item <?= rota_ativa('escolas') ?>" style="color:#fbbf24">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-            🏢 GERIR ESCOLAS
+            Gerir Escolas
         </a>
+        <?php endif; ?>
+
+        <?php if ($usuario['is_super_admin'] ?? false): ?>
+        <style>
+            .nav-item { color: #fbbf24 !important; }
+            .nav-item svg { color: #fbbf24 !important; }
+            .nav-item:hover, .nav-item.active { background: rgba(251, 191, 36, 0.1) !important; color: #fff !important; }
+        </style>
         <?php endif; ?>
     </nav>
     <div class="sidebar-footer">
         <span>Logado como</span>
-        <strong><?= e($usuario['nome'] ?? 'Usuário') ?></strong>
+        <strong style="<?= ($usuario['is_super_admin'] ?? false) ? 'color:#fbbf24' : '' ?>">
+            <?= ($usuario['is_super_admin'] ?? false) ? 'Administrador Super usuario' : e($usuario['nome'] ?? 'Usuário') ?>
+        </strong>
         <span style="margin-top:.2rem">
-            <span class="badge badge-blue"><?= e($usuario['role'] ?? '') ?></span>
+            <?php if ($usuario['is_super_admin'] ?? false): ?>
+                <span class="badge" style="background:#fbbf24; color:#1e1b4b">MASTER</span>
+            <?php else: ?>
+                <span class="badge badge-blue"><?= e($usuario['role'] ?? '') ?></span>
+            <?php endif; ?>
         </span>
         <form method="POST" action="/logout" style="margin-top:.75rem">
             <?php csrf_field(); ?>
