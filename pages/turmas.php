@@ -41,9 +41,14 @@ include __DIR__ . '/../layout/header.php';
                 <td><?= e($turma->ano_letivo) ?></td>
                 <td><span class="badge badge-green"><?= e($turma->alunos_count) ?> alunos</span></td>
                 <td>
-                    <a href="/turmas/<?= e($turma->id) ?>/qrcode" target="_blank" class="btn btn-outline" style="font-size:.75rem">
-                        📱 Ver QR
-                    </a>
+                    <div style="display:flex;gap:.5rem">
+                        <a href="/turmas/<?= e($turma->id) ?>/qrcode" target="_blank" class="btn btn-outline" style="font-size:.75rem" title="Ver QR da Turma">
+                            📱 QR
+                        </a>
+                        <a href="/turmas/<?= e($turma->id) ?>/imprimir" target="_blank" class="btn btn-primary" style="font-size:.75rem;background:#4f46e5" title="Imprimir Etiquetas">
+                            🖨️ Etiquetas
+                        </a>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; endif; ?>

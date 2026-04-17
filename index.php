@@ -42,10 +42,11 @@ $partes = explode('/', $rota);
 if ($rota === 'dashboard') { require __DIR__ . '/pages/dashboard.php'; exit; }
 if ($rota === 'orientadora') { require __DIR__ . '/pages/orientadora.php'; exit; }
 if ($rota === 'turmas') { require __DIR__ . '/pages/turmas.php'; exit; }
-if (count($partes) === 3 && $partes[0] === 'turmas' && $partes[2] === 'qrcode' && is_numeric($partes[1])) {
+if (count($partes) === 3 && $partes[0] === 'turmas' && is_numeric($partes[1])) {
     $id = (int)$partes[1];
-    require __DIR__ . '/pages/turmas_qrcode.php';
-    exit;
+    $acao = $partes[2];
+    if ($acao === 'qrcode') { require __DIR__ . '/pages/turmas_qrcode.php'; exit; }
+    if ($acao === 'imprimir') { require __DIR__ . '/pages/turmas_imprimir.php'; exit; }
 }
 if ($rota === 'usuarios') { require __DIR__ . '/pages/usuarios.php'; exit; }
 if ($rota === 'frequencias') { require __DIR__ . '/pages/frequencias.php'; exit; }
