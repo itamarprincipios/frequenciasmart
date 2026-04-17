@@ -123,18 +123,20 @@ $tituloPagina = "Notificação - " . $alerta->aluno_nome;
             </div>
         </div>
 
-        <p>Solicitamos o comparecimento dos responsáveis à escola para prestar esclarecimentos sobre as ausências e assinar o plano de compensação de conteúdos, se necessário.</p>
+        <p>Solicitamos o comparecimento dos responsáveis à escola para prestar esclarecimentos sobre as ausências, tendo em vista a necessidade de acompanhamento da frequência escolar e a garantia do direito à educação do aluno.</p>
 
-        <div style="font-size: 0.85rem; margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px; color: #444;">
+        <div style="font-size: 0.85rem; margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px; color: #444; text-align: justify;">
             <p style="margin-bottom: 10px;">
-                <strong>Informações Legais Importantes:</strong><br>
-                De acordo com a Lei de Diretrizes e Bases da Educação Nacional (Lei nº 9.394/1996), o aluno deve cumprir mínimo de 75% de frequência ao longo dos 200 dias letivos para aprovação. O não cumprimento desse requisito pode resultar em reprovação por faltas.
+                De acordo com a Lei de Diretrizes e Bases da Educação Nacional (Lei nº 9.394/1996), o aluno deve cumprir mínimo de 75% de frequência ao longo dos 200 dias letivos para aprovação. O não cumprimento desse requisito pode resultar em reprovação por faltas, comprometendo seu progresso escolar.
             </p>
             <p style="margin-bottom: 10px;">
-                Conforme o Estatuto da Criança e do Adolescente (Lei nº 8.069/1990), a escola deve acompanhar a frequência e, em casos de ausência excessiva ou risco de evasão, poderá acionar o Conselho Tutelar para garantir o direito à educação.
+                Conforme o Estatuto da Criança e do Adolescente (Lei nº 8.069/1990), a escola deve acompanhar a frequência e, em casos de ausência excessiva ou risco de evasão, poderá acionar o Conselho Tutelar para garantir o direito à educação, sendo este um dever compartilhado entre família, escola e poder público.
             </p>
-            <p>
-                Além disso, a Portaria Interministerial nº 378/2004 estabelece que a frequência escolar é critério para manutenção de benefícios sociais, como o Bolsa Família.
+            <p style="margin-bottom: 15px;">
+                Além disso, a Portaria Interministerial nº 378/2004 estabelece que a frequência escolar é critério para manutenção de benefícios sociais, como o Bolsa Família, podendo haver impacto direto no recebimento do benefício em caso de descumprimento.
+            </p>
+            <p style="font-weight: 500; color: #1e293b; border-left: 3px solid #4f46e5; padding-left: 10px;">
+                Dessa forma, reforçamos a importância da presença dos responsáveis para que, em conjunto com a escola, sejam adotadas medidas que assegurem a frequência regular e o pleno desenvolvimento do aluno.
             </p>
         </div>
     </div>
