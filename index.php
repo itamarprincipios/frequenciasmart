@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // ===================================================
 // index.php - Roteador principal do FrequenciaSmart
 // ===================================================
@@ -9,7 +9,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/aut.php';
 require_once __DIR__ . '/helpers.php';
 
 iniciar_sessao();
