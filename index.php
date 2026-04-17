@@ -42,7 +42,6 @@ $partes = explode('/', $rota);
 if ($rota === 'dashboard') { require __DIR__ . '/pages/dashboard.php'; exit; }
 if ($rota === 'orientadora') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA'); require __DIR__ . '/pages/orientadora.php'; exit; }
 if ($rota === 'turmas') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA'); require __DIR__ . '/pages/turmas.php'; exit; }
-if ($rota === 'seed-test-data') { require __DIR__ . '/scratch/seed_test_data.php'; exit; }
 if (count($partes) === 3 && $partes[0] === 'alertas' && is_numeric($partes[1])) {
     requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
     $id = (int)$partes[1];
