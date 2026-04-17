@@ -5,8 +5,8 @@ requer_login();
 $mes     = $_GET['mes']      ?? date('Y-m');
 $turmaId = $_GET['turma_id'] ?? null;
 
-$params = [$mes];
-$where  = "WHERE al.mes_referencia = ?";
+$params = [escola_id(), $mes];
+$where  = "WHERE al.escola_id = ? AND al.mes_referencia = ?";
 if ($turmaId) {
     $where  .= " AND a.turma_id = ?";
     $params[] = $turmaId;
@@ -22,7 +22,7 @@ $alertas = db_all(
     $params
 );
 
-$turmas = db_all("SELECT * FROM turmas WHERE ativa = 1 ORDER BY nome");
+$turmas = db_all("SELECT * FROM turmas WHERE escola_id = ? AND ativa = 1 ORDER BY nome", [escola_id()]);
 
 // Contadores
 $totalAlertas     = count($alertas);

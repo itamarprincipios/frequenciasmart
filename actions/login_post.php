@@ -11,7 +11,10 @@ if (!$email || !$password) {
 }
 
 $user = db_one(
-    "SELECT * FROM users WHERE email = ? AND ativo = 1",
+    "SELECT u.*, e.nome AS escola_nome 
+     FROM users u 
+     JOIN escolas e ON e.id = u.escola_id 
+     WHERE u.email = ? AND u.ativo = 1 AND e.ativa = 1",
     [$email]
 );
 
@@ -25,10 +28,13 @@ if (!$user || !password_verify($password, $user->password)) {
 session_regenerate_id(true);
 
 $_SESSION['usuario'] = [
-    'id'    => $user->id,
-    'nome'  => $user->nome,
-    'email' => $user->email,
-    'role'  => $user->role,
+    'id'            => $user->id,
+    'nome'          => $user->nome,
+    'email'         => $user->email,
+    'role'          => $user->role,
+    'escola_id'     => $user->escola_id,
+    'escola_nome'   => $user->escola_nome,
+    'is_super_admin'=> (bool)$user->is_super_admin,
 ];
 
 // Redireciona por role

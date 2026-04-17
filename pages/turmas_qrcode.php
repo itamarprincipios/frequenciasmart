@@ -3,10 +3,10 @@
 requer_login();
 
 // $id vem do roteador index.php
-$turma = db_one("SELECT * FROM turmas WHERE id = ?", [$id]);
+$turma = db_one("SELECT * FROM turmas WHERE id = ? AND escola_id = ?", [$id, escola_id()]);
 if (!$turma) {
     http_response_code(404);
-    die('<p style="font-family:monospace;padding:2rem">Turma não encontrada.</p>');
+    die('<p style="font-family:monospace;padding:2rem">Turma não encontrada ou sem permissão.</p>');
 }
 
 $payload = json_encode([

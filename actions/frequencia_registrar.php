@@ -20,7 +20,7 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data)) {
 }
 
 // Verifica se a turma existe
-$turma = db_one("SELECT id FROM turmas WHERE id = ? AND ativa = 1", [$turmaId]);
+$turma = db_one("SELECT id FROM turmas WHERE id = ? AND escola_id = ? AND ativa = 1", [$turmaId, escola_id()]);
 if (!$turma) {
     flash('error', 'Turma não encontrada.');
     redirect('/frequencia/lancar');
@@ -28,8 +28,8 @@ if (!$turma) {
 
 // Busca todos os alunos ativos da turma
 $todosAlunos = db_all(
-    "SELECT id FROM alunos WHERE turma_id = ? AND ativo = 1",
-    [$turmaId]
+    "SELECT id FROM alunos WHERE turma_id = ? AND escola_id = ? AND ativo = 1",
+    [$turmaId, escola_id()]
 );
 
 require_once __DIR__ . '/../services/AlertaService.php';
@@ -43,20 +43,20 @@ foreach ($todosAlunos as $aluno) {
 
     // updateOrCreate: atualiza se já existe, senão insere
     $existe = db_one(
-        "SELECT id FROM frequencias WHERE aluno_id = ? AND data = ?",
-        [$aluno->id, $data]
+        "SELECT id FROM frequencias WHERE aluno_id = ? AND data = ? AND escola_id = ?",
+        [$aluno->id, $data, escola_id()]
     );
 
     if ($existe) {
         db_run(
-            "UPDATE frequencias SET turma_id = ?, status = ?, registrado_por = ?, updated_at = NOW() WHERE id = ?",
-            [$turmaId, $status, $usuarioId, $existe->id]
+            "UPDATE frequencias SET turma_id = ?, status = ?, registrado_por = ?, updated_at = NOW() WHERE id = ? AND escola_id = ?",
+            [$turmaId, $status, $usuarioId, $existe->id, escola_id()]
         );
     } else {
         db_insert(
-            "INSERT INTO frequencias (aluno_id, turma_id, data, status, registrado_por, created_at, updated_at)
-             VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
-            [$aluno->id, $turmaId, $data, $status, $usuarioId]
+            "INSERT INTO frequencias (aluno_id, turma_id, escola_id, data, status, registrado_por, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())",
+            [$aluno->id, $turmaId, escola_id(), $data, $status, $usuarioId]
         );
     }
 

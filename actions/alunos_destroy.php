@@ -4,14 +4,14 @@ requer_login();
 verificar_csrf();
 
 // $id vem do roteador
-$aluno = db_one("SELECT * FROM alunos WHERE id = ?", [$id]);
+$aluno = db_one("SELECT * FROM alunos WHERE id = ? AND escola_id = ?", [$id, escola_id()]);
 if (!$aluno) {
     http_response_code(404);
-    die('<p>Aluno não encontrado.</p>');
+    die('<p>Aluno não encontrado ou sem permissão.</p>');
 }
 
 // Soft-delete: apenas marca como inativo
-db_run("UPDATE alunos SET ativo = 0, updated_at = NOW() WHERE id = ?", [$id]);
+db_run("UPDATE alunos SET ativo = 0, updated_at = NOW() WHERE id = ? AND escola_id = ?", [$id, escola_id()]);
 
 flash('success', 'Aluno excluído com sucesso.');
 redirect('/alunos');

@@ -6,14 +6,20 @@ $editando = isset($id); // $id vem do roteador quando é edição
 $aluno    = null;
 
 if ($editando) {
-    $aluno = db_one("SELECT a.*, t.nome AS turma_nome FROM alunos a LEFT JOIN turmas t ON t.id=a.turma_id WHERE a.id = ?", [$id]);
+    $aluno = db_one(
+        "SELECT a.*, t.nome AS turma_nome 
+         FROM alunos a 
+         LEFT JOIN turmas t ON t.id=a.turma_id 
+         WHERE a.id = ? AND a.escola_id = ?", 
+        [$id, escola_id()]
+    );
     if (!$aluno) {
         http_response_code(404);
-        die('<p style="font-family:monospace;padding:2rem">Aluno não encontrado.</p>');
+        die('<p style="font-family:monospace;padding:2rem">Aluno não encontrado ou sem permissão.</p>');
     }
 }
 
-$turmas = db_all("SELECT * FROM turmas WHERE ativa = 1 ORDER BY nome");
+$turmas = db_all("SELECT * FROM turmas WHERE escola_id = ? AND ativa = 1 ORDER BY nome", [escola_id()]);
 $erros  = $_SESSION['erros'] ?? [];
 unset($_SESSION['erros']);
 

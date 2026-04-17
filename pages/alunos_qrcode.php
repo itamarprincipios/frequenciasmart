@@ -4,8 +4,11 @@ requer_login();
 
 // $id vem do roteador
 $aluno = db_one(
-    "SELECT a.*, t.nome AS turma_nome, t.turno FROM alunos a LEFT JOIN turmas t ON t.id = a.turma_id WHERE a.id = ?",
-    [$id]
+    "SELECT a.*, t.nome AS turma_nome, t.turno 
+     FROM alunos a 
+     LEFT JOIN turmas t ON t.id = a.turma_id 
+     WHERE a.id = ? AND a.escola_id = ?",
+    [$id, escola_id()]
 );
 
 if (!$aluno) {

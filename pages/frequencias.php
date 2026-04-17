@@ -5,8 +5,8 @@ requer_login();
 $turmaId = $_GET['turma_id'] ?? null;
 $data    = $_GET['data'] ?? date('Y-m-d');
 
-$params = [$data];
-$where  = "WHERE f.data = ?";
+$params = [escola_id(), $data];
+$where  = "WHERE f.escola_id = ? AND f.data = ?";
 if ($turmaId) {
     $where  .= " AND f.turma_id = ?";
     $params[] = $turmaId;
@@ -23,7 +23,7 @@ $frequencias = db_all(
     $params
 );
 
-$turmas = db_all("SELECT * FROM turmas WHERE ativa = 1");
+$turmas = db_all("SELECT * FROM turmas WHERE escola_id = ? AND ativa = 1", [escola_id()]);
 
 $presentes = count(array_filter($frequencias, fn($f) => $f->status === 'PRESENTE'));
 $faltas    = count(array_filter($frequencias, fn($f) => $f->status === 'FALTA'));

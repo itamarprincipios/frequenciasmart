@@ -50,6 +50,7 @@ if (count($partes) === 3 && $partes[0] === 'turmas' && is_numeric($partes[1])) {
     if ($acao === 'excluir' && $metodo === 'POST') { require __DIR__ . '/actions/turmas_destroy.php'; exit; }
 }
 if ($rota === 'usuarios') { require __DIR__ . '/pages/usuarios.php'; exit; }
+if ($rota === 'escolas') { require __DIR__ . '/pages/escolas_index.php'; exit; }
 if ($rota === 'frequencias') { require __DIR__ . '/pages/frequencias.php'; exit; }
 if ($rota === 'frequencia/lancar') { require __DIR__ . '/pages/frequencia_lancar.php'; exit; }
 if ($rota === 'frequencia/registrar' && $metodo === 'POST') { require __DIR__ . '/actions/frequencia_registrar.php'; exit; }

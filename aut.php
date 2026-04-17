@@ -23,6 +23,13 @@ function usuario_logado(): ?array {
 }
 
 /**
+ * Retorna o ID da escola do usuário logado
+ */
+function escola_id(): int {
+    return (int)($_SESSION['usuario']['escola_id'] ?? 0);
+}
+
+/**
  * Protege a rota — redireciona para login se não autenticado
  */
 function requer_login(): void {

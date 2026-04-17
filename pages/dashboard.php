@@ -6,17 +6,17 @@ $mes = date('Y-m');
 
 // Cards
 $totalFaltasMes = db_one(
-    "SELECT COUNT(*) AS total FROM frequencias WHERE status = 'FALTA' AND DATE_FORMAT(data,'%Y-%m') = ?",
-    [$mes]
+    "SELECT COUNT(*) AS total FROM frequencias WHERE escola_id = ? AND status = 'FALTA' AND DATE_FORMAT(data,'%Y-%m') = ?",
+    [escola_id(), $mes]
 )->total;
 
 $totalAlertasAtivos = db_one(
-    "SELECT COUNT(*) AS total FROM alertas WHERE mes_referencia = ?",
-    [$mes]
+    "SELECT COUNT(*) AS total FROM alertas WHERE escola_id = ? AND mes_referencia = ?",
+    [escola_id(), $mes]
 )->total;
 
-$totalAlunos = db_one("SELECT COUNT(*) AS total FROM alunos WHERE ativo = 1")->total;
-$totalTurmas = db_one("SELECT COUNT(*) AS total FROM turmas WHERE ativa = 1")->total;
+$totalAlunos = db_one("SELECT COUNT(*) AS total FROM alunos WHERE escola_id = ? AND ativo = 1", [escola_id()])->total;
+$totalTurmas = db_one("SELECT COUNT(*) AS total FROM turmas WHERE escola_id = ? AND ativa = 1", [escola_id()])->total;
 
 // Ranking de faltas
 $rankingFaltas = db_all(
@@ -25,11 +25,11 @@ $rankingFaltas = db_all(
      FROM frequencias f
      JOIN alunos a ON a.id = f.aluno_id
      LEFT JOIN turmas t ON t.id = a.turma_id
-     WHERE f.status = 'FALTA' AND DATE_FORMAT(f.data,'%Y-%m') = ?
+     WHERE f.escola_id = ? AND f.status = 'FALTA' AND DATE_FORMAT(f.data,'%Y-%m') = ?
      GROUP BY f.aluno_id
      ORDER BY total DESC
      LIMIT 10",
-    [$mes]
+    [escola_id(), $mes]
 );
 
 // Faltas por turma (para gráfico)
@@ -37,9 +37,9 @@ $faltasPorTurma = db_all(
     "SELECT f.turma_id, COUNT(*) AS total, t.nome AS turma_nome
      FROM frequencias f
      JOIN turmas t ON t.id = f.turma_id
-     WHERE f.status = 'FALTA' AND DATE_FORMAT(f.data,'%Y-%m') = ?
+     WHERE f.escola_id = ? AND f.status = 'FALTA' AND DATE_FORMAT(f.data,'%Y-%m') = ?
      GROUP BY f.turma_id",
-    [$mes]
+    [escola_id(), $mes]
 );
 
 // Alertas recentes
@@ -48,8 +48,10 @@ $alertasRecentes = db_all(
      FROM alertas al
      JOIN alunos a ON a.id = al.aluno_id
      LEFT JOIN turmas t ON t.id = a.turma_id
+     WHERE al.escola_id = ?
      ORDER BY al.created_at DESC
-     LIMIT 10"
+     LIMIT 10",
+    [escola_id()]
 );
 
 $tituloPagina = 'Dashboard – Direção';

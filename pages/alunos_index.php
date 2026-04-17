@@ -5,8 +5,8 @@ requer_login();
 $turmaId = $_GET['turma_id'] ?? null;
 $busca   = $_GET['busca'] ?? null;
 
-$where  = "WHERE a.ativo = 1";
-$params = [];
+$where  = "WHERE a.escola_id = ? AND a.ativo = 1";
+$params = [escola_id()];
 
 if ($turmaId) {
     $where  .= " AND a.turma_id = ?";
@@ -27,7 +27,7 @@ $alunos = db_all(
     $params
 );
 
-$turmas = db_all("SELECT * FROM turmas WHERE ativa = 1 ORDER BY nome");
+$turmas = db_all("SELECT * FROM turmas WHERE escola_id = ? AND ativa = 1 ORDER BY nome", [escola_id()]);
 
 $tituloPagina = 'Gestão de Alunos';
 include __DIR__ . '/../layout/header.php';

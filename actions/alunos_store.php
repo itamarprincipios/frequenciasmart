@@ -18,13 +18,13 @@ if (!$turmaId)         $erros[] = 'Selecione uma turma.';
 
 // Verifica unicidade da matricula
 if ($matricula) {
-    $existe = db_one("SELECT id FROM alunos WHERE matricula = ?", [$matricula]);
-    if ($existe) $erros[] = 'Esta matricula já está cadastrada.';
+    $existe = db_one("SELECT id FROM alunos WHERE matricula = ? AND escola_id = ?", [$matricula, escola_id()]);
+    if ($existe) $erros[] = 'Esta matricula já está cadastrada nesta escola.';
 }
 
 // Verifica se a turma existe
 if ($turmaId) {
-    $turma = db_one("SELECT id FROM turmas WHERE id = ? AND ativa = 1", [$turmaId]);
+    $turma = db_one("SELECT id FROM turmas WHERE id = ? AND escola_id = ? AND ativa = 1", [$turmaId, escola_id()]);
     if (!$turma) $erros[] = 'Turma não encontrada.';
 }
 
@@ -38,9 +38,9 @@ if (!empty($erros)) {
 $qrToken = 'ALU_' . strtoupper(bin2hex(random_bytes(5)));
 
 db_insert(
-    "INSERT INTO alunos (nome, matricula, qr_token, turma_id, ativo, created_at, updated_at)
-     VALUES (?, ?, ?, ?, 1, NOW(), NOW())",
-    [$nome, $matricula, $qrToken, $turmaId]
+    "INSERT INTO alunos (nome, matricula, qr_token, turma_id, escola_id, ativo, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, 1, NOW(), NOW())",
+    [$nome, $matricula, $qrToken, $turmaId, escola_id()]
 );
 
 flash('success', 'Aluno cadastrado com sucesso!');

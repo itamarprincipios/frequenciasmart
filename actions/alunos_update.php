@@ -4,10 +4,10 @@ requer_login();
 verificar_csrf();
 
 // $id vem do roteador
-$aluno = db_one("SELECT * FROM alunos WHERE id = ?", [$id]);
+$aluno = db_one("SELECT * FROM alunos WHERE id = ? AND escola_id = ?", [$id, escola_id()]);
 if (!$aluno) {
     http_response_code(404);
-    die('<p>Aluno não encontrado.</p>');
+    die('<p>Aluno não encontrado ou sem permissão.</p>');
 }
 
 $nome      = trim($_POST['nome']      ?? '');
@@ -23,12 +23,12 @@ if (!$turmaId)           $erros[] = 'Selecione uma turma.';
 
 // Unicidade da matricula (exceto o próprio aluno)
 if ($matricula) {
-    $existe = db_one("SELECT id FROM alunos WHERE matricula = ? AND id != ?", [$matricula, $id]);
-    if ($existe) $erros[] = 'Esta matricula já está cadastrada para outro aluno.';
+    $existe = db_one("SELECT id FROM alunos WHERE matricula = ? AND id != ? AND escola_id = ?", [$matricula, $id, escola_id()]);
+    if ($existe) $erros[] = 'Esta matricula já está cadastrada para outro aluno nesta escola.';
 }
 
 if ($turmaId) {
-    $turma = db_one("SELECT id FROM turmas WHERE id = ? AND ativa = 1", [$turmaId]);
+    $turma = db_one("SELECT id FROM turmas WHERE id = ? AND escola_id = ? AND ativa = 1", [$turmaId, escola_id()]);
     if (!$turma) $erros[] = 'Turma não encontrada.';
 }
 
@@ -39,8 +39,8 @@ if (!empty($erros)) {
 }
 
 db_run(
-    "UPDATE alunos SET nome = ?, matricula = ?, turma_id = ?, updated_at = NOW() WHERE id = ?",
-    [$nome, $matricula, $turmaId, $id]
+    "UPDATE alunos SET nome = ?, matricula = ?, turma_id = ?, updated_at = NOW() WHERE id = ? AND escola_id = ?",
+    [$nome, $matricula, $turmaId, $id, escola_id()]
 );
 
 flash('success', 'Aluno atualizado com sucesso!');

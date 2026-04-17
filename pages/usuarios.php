@@ -2,7 +2,7 @@
 // pages/usuarios.php
 requer_role('DIRETOR');
 
-$usuarios = db_all("SELECT * FROM users ORDER BY nome");
+$usuarios = db_all("SELECT * FROM users WHERE escola_id = ? ORDER BY nome", [escola_id()]);
 
 $tituloPagina = 'Usuários';
 include __DIR__ . '/../layout/header.php';

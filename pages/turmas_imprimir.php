@@ -5,15 +5,15 @@ requer_login();
 // $id vem do roteador
 $id = (int)$id;
 
-$turma = db_one("SELECT * FROM turmas WHERE id = ?", [$id]);
+$turma = db_one("SELECT * FROM turmas WHERE id = ? AND escola_id = ?", [$id, escola_id()]);
 if (!$turma) {
     http_response_code(404);
-    die('Turma não encontrada.');
+    die('Turma não encontrada ou sem permissão.');
 }
 
 $alunos = db_all(
-    "SELECT * FROM alunos WHERE turma_id = ? AND ativo = 1 ORDER BY nome",
-    [$id]
+    "SELECT * FROM alunos WHERE turma_id = ? AND escola_id = ? AND ativo = 1 ORDER BY nome",
+    [$id, escola_id()]
 );
 
 if (empty($alunos)) {

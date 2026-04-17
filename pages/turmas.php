@@ -6,9 +6,10 @@ $turmas = db_all(
     "SELECT t.*, COUNT(a.id) AS alunos_count
      FROM turmas t
      LEFT JOIN alunos a ON a.turma_id = t.id AND a.ativo = 1
-     WHERE t.ativa = 1
+     WHERE t.escola_id = ? AND t.ativa = 1
      GROUP BY t.id
-     ORDER BY t.nome"
+     ORDER BY t.nome",
+    [escola_id()]
 );
 
 $tituloPagina = 'Turmas';

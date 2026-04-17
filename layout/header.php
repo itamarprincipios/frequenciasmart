@@ -130,7 +130,7 @@
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <h2>📚 FrequenciaSmart</h2>
-        <small>Sistema de Frequência</small>
+        <small><?= e($usuario['escola_nome'] ?? 'Sistema de Frequência') ?></small>
     </div>
     <nav>
         <?php if (in_array($role, ['DIRETOR','VICE'])): ?>
@@ -173,6 +173,13 @@
             Usuários
         </a>
         <?php endif; ?>
+
+        <?php if ($usuario['is_super_admin'] ?? 0): ?>
+        <a href="/escolas" class="nav-item <?= rota_ativa('escolas') ?>" style="margin-top:1rem;color:#fbbf24">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            🏢 GERIR ESCOLAS
+        </a>
+        <?php endif; ?>
     </nav>
     <div class="sidebar-footer">
         <span>Logado como</span>
@@ -194,7 +201,7 @@
             <button class="menu-toggle" onclick="toggleMenu()">
                 <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
-            <h1><?= e($tituloPagina ?? 'FrequenciaSmart') ?></h1>
+            <h1><?= e($tituloPagina ?? ($usuario['escola_nome'] ?? 'FrequenciaSmart')) ?></h1>
         </div>
         <span style="font-size:.8rem; color:#64748b"><?= date('d/m/Y') ?></span>
     </div>
