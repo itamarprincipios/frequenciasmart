@@ -102,9 +102,7 @@ $tituloPagina = "Notificação - " . $alerta->aluno_nome;
 
         <div class="dados-aluno">
             <strong>Aluno(a):</strong> <?= e($alerta->aluno_nome) ?><br>
-            <strong>Matrícula:</strong> <?= e($alerta->matricula) ?><br>
             <strong>Turma:</strong> <?= e($alerta->turma_nome) ?><br>
-            <strong>Período de Referência:</strong> <?= e(fmt_mes_ano($alerta->mes_referencia)) ?>
         </div>
 
         <p>
@@ -126,6 +124,19 @@ $tituloPagina = "Notificação - " . $alerta->aluno_nome;
         </div>
 
         <p>Solicitamos o comparecimento dos responsáveis à escola para prestar esclarecimentos sobre as ausências e assinar o plano de compensação de conteúdos, se necessário.</p>
+
+        <div style="font-size: 0.85rem; margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px; color: #444;">
+            <p style="margin-bottom: 10px;">
+                <strong>Informações Legais Importantes:</strong><br>
+                De acordo com a Lei de Diretrizes e Bases da Educação Nacional (Lei nº 9.394/1996), o aluno deve cumprir mínimo de 75% de frequência ao longo dos 200 dias letivos para aprovação. O não cumprimento desse requisito pode resultar em reprovação por faltas.
+            </p>
+            <p style="margin-bottom: 10px;">
+                Conforme o Estatuto da Criança e do Adolescente (Lei nº 8.069/1990), a escola deve acompanhar a frequência e, em casos de ausência excessiva ou risco de evasão, poderá acionar o Conselho Tutelar para garantir o direito à educação.
+            </p>
+            <p>
+                Além disso, a Portaria Interministerial nº 378/2004 estabelece que a frequência escolar é critério para manutenção de benefícios sociais, como o Bolsa Família.
+            </p>
+        </div>
     </div>
 
     <div class="assinaturas">
