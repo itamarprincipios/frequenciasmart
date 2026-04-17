@@ -40,36 +40,61 @@ requer_login();
 $partes = explode('/', $rota);
 
 if ($rota === 'dashboard') { require __DIR__ . '/pages/dashboard.php'; exit; }
-if ($rota === 'orientadora') { require __DIR__ . '/pages/orientadora.php'; exit; }
-if ($rota === 'turmas') { require __DIR__ . '/pages/turmas.php'; exit; }
+if ($rota === 'orientadora') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA'); require __DIR__ . '/pages/orientadora.php'; exit; }
+if ($rota === 'turmas') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA'); require __DIR__ . '/pages/turmas.php'; exit; }
 if (count($partes) === 3 && $partes[0] === 'turmas' && is_numeric($partes[1])) {
+    requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
     $id = (int)$partes[1];
     $acao = $partes[2];
     if ($acao === 'qrcode') { require __DIR__ . '/pages/turmas_qrcode.php'; exit; }
     if ($acao === 'imprimir') { require __DIR__ . '/pages/turmas_imprimir.php'; exit; }
-    if ($acao === 'excluir' && $metodo === 'POST') { require __DIR__ . '/actions/turmas_destroy.php'; exit; }
+    if ($acao === 'excluir' && $metodo === 'POST') { requer_role('DIRETOR'); require __DIR__ . '/actions/turmas_destroy.php'; exit; }
 }
-if ($rota === 'usuarios') { require __DIR__ . '/pages/usuarios.php'; exit; }
+if ($rota === 'usuarios') { requer_role('DIRETOR'); require __DIR__ . '/pages/usuarios.php'; exit; }
+if ($rota === 'usuarios/criar') { requer_role('DIRETOR'); require __DIR__ . '/pages/usuarios_form.php'; exit; }
+if (count($partes) === 3 && $partes[0] === 'usuarios' && is_numeric($partes[1])) {
+    requer_role('DIRETOR');
+    $id = (int)$partes[1];
+    $acao = $partes[2];
+    if ($acao === 'editar') { require __DIR__ . '/pages/usuarios_form.php'; exit; }
+    if ($acao === 'excluir' && $metodo === 'POST') { require __DIR__ . '/actions/usuarios_destroy.php'; exit; }
+}
+
+if (count($partes) === 2 && $partes[0] === 'usuarios' && is_numeric($partes[1])) {
+    requer_role('DIRETOR');
+    $id = (int)$partes[1];
+    if ($metodo === 'POST') require __DIR__ . '/actions/usuarios_update.php';
+    exit;
+}
+
+if ($rota === 'usuarios' && $metodo === 'POST') {
+    requer_role('DIRETOR');
+    require __DIR__ . '/actions/usuarios_store.php';
+    exit;
+}
 if ($rota === 'escolas') { require __DIR__ . '/pages/escolas_index.php'; exit; }
 if ($rota === 'frequencias') { require __DIR__ . '/pages/frequencias.php'; exit; }
 if ($rota === 'frequencia/lancar') { require __DIR__ . '/pages/frequencia_lancar.php'; exit; }
 if ($rota === 'frequencia/registrar' && $metodo === 'POST') { require __DIR__ . '/actions/frequencia_registrar.php'; exit; }
 if ($rota === 'alunos') {
+    requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
     if ($metodo === 'POST') require __DIR__ . '/actions/alunos_store.php';
     else require __DIR__ . '/pages/alunos_index.php';
     exit;
 }
-if ($rota === 'alunos/criar') { require __DIR__ . '/pages/alunos_form.php'; exit; }
+if ($rota === 'alunos/criar') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA'); require __DIR__ . '/pages/alunos_form.php'; exit; }
 if (count($partes) === 2 && $partes[0] === 'alunos' && is_numeric($partes[1])) {
+    requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
     $id = (int)$partes[1];
     if ($metodo === 'POST') require __DIR__ . '/actions/alunos_update.php';
     exit;
 }
 if (count($partes) === 3 && $partes[0] === 'alunos' && is_numeric($partes[1])) {
+    requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
     $id = (int)$partes[1];
     $acao = $partes[2];
     if ($acao === 'editar') { require __DIR__ . '/pages/alunos_form.php'; exit; }
-    if ($acao === 'excluir' && $metodo === 'POST') { require __DIR__ . '/actions/alunos_destroy.php'; exit; }
+    if ($acao === 'excluir' && $metodo === 'POST') { requer_role('DIRETOR'); require __DIR__ . '/actions/alunos_destroy.php'; exit; }
     if ($acao === 'qrcode') { require __DIR__ . '/pages/alunos_qrcode.php'; exit; }
 }
 

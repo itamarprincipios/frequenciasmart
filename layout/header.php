@@ -140,10 +140,12 @@
         </a>
         <?php endif; ?>
 
+        <?php if (!tem_role('ASSISTENTE')): ?>
         <a href="/orientadora" class="nav-item <?= rota_ativa('orientadora') ?>">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
             Alertas
         </a>
+        <?php endif; ?>
 
         <a href="/frequencia/lancar" class="nav-item <?= rota_ativa('frequencia/lancar') ?>">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
@@ -155,19 +157,21 @@
             Frequências
         </a>
 
+        <?php if (!tem_role('ASSISTENTE')): ?>
         <a href="/alunos" class="nav-item <?= rota_ativa('alunos*') ?>">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
             Alunos
         </a>
+        <?php endif; ?>
 
-        <?php if (in_array($role, ['DIRETOR','VICE'])): ?>
+        <?php if (tem_role('DIRETOR', 'VICE', 'ORIENTADORA')): ?>
         <a href="/turmas" class="nav-item <?= rota_ativa('turmas') ?>">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
             Turmas
         </a>
         <?php endif; ?>
 
-        <?php if ($role === 'DIRETOR'): ?>
+        <?php if (tem_role('DIRETOR')): ?>
         <a href="/usuarios" class="nav-item <?= rota_ativa('usuarios') ?>">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
             Usuários
