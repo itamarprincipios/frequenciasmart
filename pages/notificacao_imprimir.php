@@ -60,26 +60,26 @@ $tituloPagina = "Notificação - " . $alerta->aluno_nome;
     <meta charset="UTF-8">
     <title><?= e($tituloPagina) ?></title>
     <style>
-        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #333; padding: 40px; }
-        .documento { max-width: 800px; margin: 0 auto; border: 1px solid #ccc; padding: 50px; background: #fff; }
-        .cabecalho { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #333; padding-bottom: 20px; }
-        .cabecalho h1 { font-size: 1.5rem; margin: 0; text-transform: uppercase; }
-        .cabecalho p { margin: 5px 0; font-size: 0.9rem; }
-        .titulo-doc { text-align: center; text-decoration: underline; font-weight: bold; margin-bottom: 30px; font-size: 1.2rem; }
-        .corpo { margin-bottom: 40px; text-align: justify; }
-        .dados-aluno { background: #f9f9f9; padding: 15px; border: 1px solid #eee; margin-bottom: 20px; }
-        .faltas-lista { margin: 20px 0; }
-        .faltas-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
-        .falta-item { border: 1px solid #ddd; padding: 5px; text-align: center; font-size: 0.85rem; }
-        .assinaturas { margin-top: 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        .assinatura-box { border-top: 1px solid #333; text-align: center; padding-top: 10px; font-size: 0.9rem; }
-        .footer-doc { margin-top: 50px; font-size: 0.8rem; text-align: center; color: #777; }
+        body { font-family: 'Inter', sans-serif; line-height: 1.4; color: #333; padding: 20px; }
+        .documento { max-width: 800px; margin: 0 auto; border: 1px solid #ccc; padding: 30px; background: #fff; font-size: 0.9rem; }
+        .cabecalho { text-align: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .cabecalho h1 { font-size: 1.3rem; margin: 0; text-transform: uppercase; }
+        .cabecalho p { margin: 2px 0; font-size: 0.8rem; }
+        .titulo-doc { text-align: center; text-decoration: underline; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; }
+        .corpo { margin-bottom: 15px; text-align: justify; }
+        .dados-aluno { background: #f9f9f9; padding: 10px; border: 1px solid #eee; margin-bottom: 10px; display: flex; gap: 20px; }
+        .faltas-lista { margin: 10px 0; }
+        .faltas-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin-top: 5px; }
+        .falta-item { border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 0.75rem; }
+        .assinaturas { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .assinatura-box { border-top: 1px solid #333; text-align: center; padding-top: 5px; font-size: 0.8rem; }
+        .footer-doc { margin-top: 20px; font-size: 0.7rem; text-align: center; color: #777; }
         @media print {
             body { padding: 0; background: none; }
             .documento { border: none; padding: 0; width: 100%; max-width: none; }
             .no-print { display: none; }
         }
-        .btn-print { background: #4f46e5; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+        .btn-print { background: #4f46e5; color: #fff; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 10px; }
     </style>
 </head>
 <body>
