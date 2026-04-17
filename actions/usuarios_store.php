@@ -9,9 +9,6 @@ $password = trim($_POST['password'] ?? '');
 $role     = $_POST['role'] ?? 'ASSISTENTE';
 $ativo    = (int)($_POST['ativo'] ?? 1);
 
-$role     = $_POST['role'] ?? 'ASSISTENTE';
-$ativo    = (int)($_POST['ativo'] ?? 1);
-
 $isMaster  = $_SESSION['usuario']['is_super_admin'] ?? false;
 $escola_id = (int)($isMaster ? ($_POST['escola_id'] ?? 0) : escola_id());
 
