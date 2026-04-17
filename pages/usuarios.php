@@ -2,7 +2,18 @@
 // pages/usuarios.php
 requer_role('DIRETOR');
 
-$usuarios = db_all("SELECT * FROM users WHERE escola_id = ? ORDER BY nome", [escola_id()]);
+$isMaster = $_SESSION['usuario']['is_super_admin'] ?? false;
+
+if ($isMaster) {
+    $usuarios = db_all(
+        "SELECT u.*, e.nome AS escola_nome 
+         FROM users u 
+         LEFT JOIN escolas e ON e.id = u.escola_id 
+         ORDER BY e.nome, u.nome"
+    );
+} else {
+    $usuarios = db_all("SELECT * FROM users WHERE escola_id = ? ORDER BY nome", [escola_id()]);
+}
 
 $tituloPagina = 'Usuários';
 include __DIR__ . '/../layout/header.php';
@@ -15,7 +26,14 @@ include __DIR__ . '/../layout/header.php';
     </div>
     <table>
         <thead>
-            <tr><th>Nome</th><th>E-mail</th><th>Cargo</th><th>Status</th><th>Ações</th></tr>
+            <tr>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <?php if ($isMaster): ?><th>Escola</th><?php endif; ?>
+                <th>Cargo</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
         </thead>
         <tbody>
             <?php if (empty($usuarios)): ?>
@@ -38,6 +56,9 @@ include __DIR__ . '/../layout/header.php';
             <tr>
                 <td><strong><?= e($u->nome) ?></strong></td>
                 <td style="color:#64748b;font-size:.8rem"><?= e($u->email) ?></td>
+                <?php if ($isMaster): ?>
+                    <td style="font-size:.75rem"><?= e($u->escola_nome ?? '--') ?></td>
+                <?php endif; ?>
                 <td><span class="badge <?= e($badgeClass) ?>"><?= e($roleLabel) ?></span></td>
                 <td>
                     <?php if ($u->ativo): ?>

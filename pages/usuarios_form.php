@@ -12,6 +12,12 @@ if ($id) {
     }
 }
 
+$isMaster = $_SESSION['usuario']['is_super_admin'] ?? false;
+$escolas = [];
+if ($isMaster) {
+    $escolas = db_all("SELECT id, nome FROM escolas WHERE ativa = 1 ORDER BY nome");
+}
+
 $tituloPagina = $id ? 'Editar Usuário' : 'Novo Usuário';
 include __DIR__ . '/../layout/header.php';
 ?>
@@ -23,6 +29,22 @@ include __DIR__ . '/../layout/header.php';
     
     <form method="POST" action="<?= $id ? "/usuarios/{$id}" : "/usuarios" ?>" style="padding: 1.5rem;">
         <?php csrf_field(); ?>
+
+        <?php if ($isMaster): ?>
+        <div class="form-group" style="margin-bottom: 1.5rem; padding: 1rem; background: #fef3c7; border-radius: 8px;">
+            <label style="color: #92400e; font-weight: bold;">🏢 Vínculo Institucional (Escola)</label>
+            <select name="escola_id" class="form-control" required style="border-color: #f59e0b">
+                <option value="">-- Selecione a Escola --</option>
+                <?php foreach ($escolas as $e): ?>
+                    <option value="<?= $e->id ?>" <?= (($u && $u->escola_id == $e->id) || (!$u && count($escolas) == 1)) ? 'selected' : '' ?>>
+                        <?= e($e->nome) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <small style="color: #b45309">Como Super Admin, você deve selecionar a qual escola este usuário pertencerá.</small>
+        </div>
+        <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid #e2e8f0;">
+        <?php endif; ?>
 
         <div class="form-group">
             <label>Nome Completo</label>

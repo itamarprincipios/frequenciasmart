@@ -44,6 +44,7 @@ function requer_login(): void {
 function requer_role(string ...$roles): void {
     requer_login();
     $usuario = $_SESSION['usuario'];
+    if (($usuario['is_super_admin'] ?? false) === true) return;
     if (!in_array($usuario['role'], $roles)) {
         include __DIR__ . '/pages/403.php';
         exit;
@@ -56,5 +57,6 @@ function requer_role(string ...$roles): void {
 function tem_role(string ...$roles): bool {
     $usuario = $_SESSION['usuario'] ?? null;
     if (!$usuario) return false;
+    if (($usuario['is_super_admin'] ?? false) === true) return true;
     return in_array($usuario['role'], $roles);
 }
