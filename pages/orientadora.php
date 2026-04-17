@@ -68,7 +68,7 @@ include __DIR__ . '/../layout/header.php';
         <div class="card-value"><?= e($totalConsec) ?></div>
     </div>
     <div class="card">
-        <div class="card-label">Faltas mensais (10+)</div>
+        <div class="card-label">Faltas mensais (8+)</div>
         <div class="card-value"><?= e($totalIntercalada) ?></div>
     </div>
 </div>
@@ -81,7 +81,7 @@ include __DIR__ . '/../layout/header.php';
     </div>
     <table>
         <thead>
-            <tr><th>Aluno</th><th>Matrícula</th><th>Turma</th><th>Tipo de Alerta</th><th>Mês</th><th>Gerado em</th></tr>
+            <tr><th>Aluno</th><th>Matrícula</th><th>Turma</th><th>Tipo de Alerta</th><th>Mês</th><th>Gerado em</th><th style="text-align:right">Ações</th></tr>
         </thead>
         <tbody>
             <?php if (empty($alertas)): ?>
@@ -95,11 +95,16 @@ include __DIR__ . '/../layout/header.php';
                     <?php if ($alerta->tipo === 'CONSECUTIVA'): ?>
                         <span class="badge badge-red">⚠️ 3 Consecutivas</span>
                     <?php else: ?>
-                        <span class="badge badge-yellow">📊 10 Mensais</span>
+                        <span class="badge badge-yellow">📊 8 Mensais</span>
                     <?php endif; ?>
                 </td>
                 <td><?= e($alerta->mes_referencia) ?></td>
                 <td style="color:#64748b;font-size:.8rem"><?= fmt_datetime($alerta->created_at) ?></td>
+                <td style="text-align:right">
+                    <a href="/alertas/<?= e($alerta->id) ?>/imprimir" target="_blank" class="btn btn-outline" style="padding:.3rem .6rem; font-size:.75rem">
+                        📄 Gerar Notificação
+                    </a>
+                </td>
             </tr>
             <?php endforeach; endif; ?>
         </tbody>

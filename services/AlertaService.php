@@ -54,7 +54,7 @@ class AlertaService
             [$alunoId, $escolaId, $mes]
         );
 
-        if ($row && $row->total >= 10) {
+        if ($row && $row->total >= 8) {
             $this->criarAlertaSeNaoExistir($alunoId, 'INTERCALADA', $escolaId);
         }
     }
@@ -92,7 +92,7 @@ class AlertaService
         $aluno = db_one("SELECT nome FROM alunos WHERE id = ? AND escola_id = ?", [$alunoId, $escolaId]);
         if (!$aluno) return;
 
-        $tipoLabel = $tipo === 'CONSECUTIVA' ? '3 faltas consecutivas' : '10 faltas no mês';
+        $tipoLabel = $tipo === 'CONSECUTIVA' ? '3 faltas consecutivas' : '8 faltas no mês';
         $titulo    = 'Alerta de Frequência';
         $mensagem  = "O aluno {$aluno->nome} atingiu o limite de faltas ({$tipoLabel}).";
 
