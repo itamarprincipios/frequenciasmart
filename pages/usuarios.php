@@ -22,13 +22,17 @@ include __DIR__ . '/../layout/header.php';
             <tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:1.5rem">Nenhum usuário</td></tr>
             <?php else: foreach ($usuarios as $u): ?>
             <?php
-            <?php
             $roleLabel = match($u->role) {
                 'DIRETOR'     => 'Gestor(a)',
                 'VICE'        => 'Vice Gestor',
                 'ORIENTADORA' => 'Orientador(a)',
                 'ASSISTENTE'  => 'Assistente',
                 default       => $u->role
+            };
+            $badgeClass = match($u->role) {
+                'DIRETOR', 'VICE' => 'badge-blue',
+                'ORIENTADORA'     => 'badge-green',
+                default           => 'badge-gray',
             };
             ?>
             <tr>
