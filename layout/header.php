@@ -133,8 +133,10 @@
         <small>
             <?php if ($usuario['is_super_admin'] ?? false): ?>
                 ✨ Administrativo Master
+            <?php elseif ($usuario['escola_nome'] ?? false): ?>
+                <?= e($usuario['escola_nome']) ?>
             <?php else: ?>
-                <?= e($usuario['escola_nome'] ?? 'Sistema de Frequência') ?>
+                Sistema de Frequência
             <?php endif; ?>
         </small>
     </div>

@@ -13,8 +13,8 @@ if (!$email || !$password) {
 $user = db_one(
     "SELECT u.*, e.nome AS escola_nome 
      FROM users u 
-     JOIN escolas e ON e.id = u.escola_id 
-     WHERE u.email = ? AND u.ativo = 1 AND e.ativa = 1",
+     LEFT JOIN escolas e ON e.id = u.escola_id 
+     WHERE u.email = ? AND u.ativo = 1 AND (e.id IS NULL OR e.ativa = 1)",
     [$email]
 );
 
