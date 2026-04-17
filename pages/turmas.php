@@ -48,6 +48,11 @@ include __DIR__ . '/../layout/header.php';
                         <a href="/turmas/<?= e($turma->id) ?>/imprimir" target="_blank" class="btn btn-primary" style="font-size:.75rem;background:#4f46e5" title="Imprimir Etiquetas">
                             🖨️ Etiquetas
                         </a>
+                        <form method="POST" action="/turmas/<?= e($turma->id) ?>/excluir" style="display:inline"
+                              onsubmit="return confirm('Excluir turma <?= e($turma->nome) ?>? Todos os alunos perderão o vínculo.')">
+                            <?php csrf_field(); ?>
+                            <button type="submit" class="btn btn-danger" style="font-size:.75rem;padding:.35rem .7rem" title="Excluir Turma">🗑️</button>
+                        </form>
                     </div>
                 </td>
             </tr>

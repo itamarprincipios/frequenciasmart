@@ -47,6 +47,7 @@ if (count($partes) === 3 && $partes[0] === 'turmas' && is_numeric($partes[1])) {
     $acao = $partes[2];
     if ($acao === 'qrcode') { require __DIR__ . '/pages/turmas_qrcode.php'; exit; }
     if ($acao === 'imprimir') { require __DIR__ . '/pages/turmas_imprimir.php'; exit; }
+    if ($acao === 'excluir' && $metodo === 'POST') { require __DIR__ . '/actions/turmas_destroy.php'; exit; }
 }
 if ($rota === 'usuarios') { require __DIR__ . '/pages/usuarios.php'; exit; }
 if ($rota === 'frequencias') { require __DIR__ . '/pages/frequencias.php'; exit; }
