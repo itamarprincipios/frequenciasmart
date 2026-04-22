@@ -39,12 +39,19 @@ function requer_login(): void {
 }
 
 /**
- * Verifica se o usuário tem o role necessário
+ * Retorna true se o usuário logado é Super Admin
+ */
+function is_super_admin(): bool {
+    return (bool)(($_SESSION['usuario'] ?? [])['is_super_admin'] ?? false);
+}
+
+/**
+ * Verifica se o usuário tem o role necessário.
+ * Super Admin é BLOQUEADO de rotas de escola propositalmente.
  */
 function requer_role(string ...$roles): void {
     requer_login();
     $usuario = $_SESSION['usuario'];
-    if (($usuario['is_super_admin'] ?? false) === true) return;
     if (!in_array($usuario['role'], $roles)) {
         include __DIR__ . '/pages/403.php';
         exit;
@@ -52,11 +59,22 @@ function requer_role(string ...$roles): void {
 }
 
 /**
- * Verifica se o usuário tem um dos roles (retorna bool)
+ * Verifica se o usuário tem um dos roles (retorna bool).
+ * Super Admin NÃO bypassa rotas de escola.
  */
 function tem_role(string ...$roles): bool {
     $usuario = $_SESSION['usuario'] ?? null;
     if (!$usuario) return false;
-    if (($usuario['is_super_admin'] ?? false) === true) return true;
     return in_array($usuario['role'], $roles);
+}
+
+/**
+ * Protege rota exclusiva do Super Admin.
+ */
+function requer_super_admin(): void {
+    requer_login();
+    if (!is_super_admin()) {
+        include __DIR__ . '/pages/403.php';
+        exit;
+    }
 }

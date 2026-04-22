@@ -1,8 +1,12 @@
 <?php
 // pages/usuarios.php
-requer_role('DIRETOR');
+requer_login();
+if (!is_super_admin() && !tem_role('DIRETOR')) {
+    include __DIR__ . '/403.php';
+    exit;
+}
 
-$isMaster = $_SESSION['usuario']['is_super_admin'] ?? false;
+$isMaster = is_super_admin();
 
 if ($isMaster) {
     $usuarios = db_all(
@@ -15,13 +19,13 @@ if ($isMaster) {
     $usuarios = db_all("SELECT * FROM users WHERE escola_id = ? ORDER BY nome", [escola_id()]);
 }
 
-$tituloPagina = 'Usuários';
+$tituloPagina = $isMaster ? 'Gerenciar Usuários / Diretores' : 'Usuários';
 include __DIR__ . '/../layout/header.php';
 ?>
 
 <div class="table-wrap">
     <div class="table-head">
-        <h3>👥 Usuários da Escola</h3>
+        <h3><?= $isMaster ? '👥 Usuários / Diretores de todas as Escolas' : '👥 Usuários da Escola' ?></h3>
         <a href="/usuarios/criar" class="btn btn-primary">+ Novo Usuário</a>
     </div>
     <table>
