@@ -39,6 +39,11 @@
             border-radius: 8px; font-size: .85rem; margin-bottom: 1rem;
         }
         .footer-text { text-align: center; font-size: .75rem; color: #94a3b8; margin-top: 1.5rem; }
+        
+        @media (max-width: 450px) {
+            .login-card { padding: 1.5rem; border-radius: 12px; margin: 1rem; }
+            .logo h1 { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>

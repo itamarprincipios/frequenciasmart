@@ -56,68 +56,54 @@
         .card-value { font-size: 2rem; font-weight: 700; margin-top: .25rem; }
         .card-sub   { font-size: .75rem; color: #94a3b8; margin-top: .25rem; }
 
-        /* TABLES */
-        .table-wrap { background: #fff; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,.06); overflow: hidden; margin-bottom: 1.5rem; }
-        .table-head { padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
-        .table-head h3 { font-size: .9rem; font-weight: 600; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: .75rem 1.25rem; text-align: left; font-size: .825rem; }
-        th { font-weight: 600; color: #475569; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
-        tr:not(:last-child) td { border-bottom: 1px solid #f1f5f9; }
-        tr:hover td { background: #fafafe; }
-
-        /* BADGES */
-        .badge { display: inline-block; padding: .2rem .6rem; border-radius: 999px; font-size: .7rem; font-weight: 600; }
-        .badge-blue   { background: #dbeafe; color: #1d4ed8; }
-        .badge-green  { background: #d1fae5; color: #065f46; }
-        .badge-red    { background: #fee2e2; color: #991b1b; }
-        .badge-yellow { background: #fef3c7; color: #92400e; }
-        .badge-gray   { background: #f1f5f9; color: #475569; }
-
-        /* BUTTONS */
-        .btn { display: inline-flex; align-items: center; gap: .4rem; padding: .5rem 1rem; border-radius: 6px;
-               font-size: .825rem; font-weight: 500; cursor: pointer; border: none; transition: all .15s; text-decoration: none; }
-        .btn-primary { background: var(--primary); color: #fff; }
-        .btn-primary:hover { background: var(--primary-dk); }
-        .btn-outline { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
-        .btn-danger  { background: var(--danger); color: #fff; }
+        /* RESPONSIVIDADE EM TABELAS */
+        .table-wrap { 
+            background: #fff; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,.06); 
+            overflow-x: auto; margin-bottom: 1.5rem; 
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-head { 
+            padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; 
+            display: flex; align-items: center; justify-content: space-between; 
+            min-width: max-content; width: 100%;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        
+        @media (max-width: 600px) {
+            table { min-width: 100%; }
+            th, td { padding: .75rem .75rem; font-size: .8rem; }
+            .card-value { font-size: 1.5rem; }
+            .topbar h1 { font-size: 1rem; }
+            .content { padding: 1rem; }
+        }
 
         /* GRID 2 cols */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+        @media (max-width: 1024px) { .grid-2 { grid-template-columns: 1fr; } }
 
-        /* ALERT */
-        .alert { padding: .75rem 1rem; border-radius: var(--radius); margin-bottom: 1rem; font-size: .875rem; }
-        .alert-error   { background: #fee2e2; color: #991b1b; }
-        .alert-success { background: #d1fae5; color: #065f46; }
+        /* CARDS */
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
 
-        /* FORM */
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-size: .825rem; font-weight: 500; margin-bottom: .4rem; color: #374151; }
-        .form-control { width: 100%; padding: .6rem .85rem; border: 1px solid #d1d5db; border-radius: 6px;
-                        font-size: .875rem; outline: none; transition: border .15s; font-family: inherit; }
-        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
-        select.form-control { background: #fff; }
-
-        /* CHART WRAP */
-        .chart-wrap { background: #fff; border-radius: var(--radius); padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
-        .chart-wrap h3 { font-size: .9rem; font-weight: 600; margin-bottom: 1rem; }
-
-        /* LOGOUT BTN */
-        .logout-btn { background: none; border: none; cursor: pointer; color: #ef4444; font-size: .8rem; font-family: inherit; }
-
-        /* RESPONSIVO */
-        .menu-toggle { display: none; background: none; border: none; cursor: pointer; color: #1e293b; margin-right: 1rem; }
-        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index: 90; display: none; }
+        /* RESPONSIVO MOBILE */
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; color: #1e293b; margin-right: .75rem; padding: .25rem; }
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index: 90; display: none; opacity: 0; transition: opacity 0.3s; }
 
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 15px rgba(0,0,0,0.1); width: 280px; }
             .sidebar.open { transform: translateX(0); }
             .main { margin-left: 0; }
             .menu-toggle { display: flex; align-items: center; }
-            .overlay.open { display: block; }
+            .overlay.show { display: block; opacity: 1; }
         }
     </style>
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+    </script>
 </head>
 <body>
 
@@ -140,7 +126,7 @@
             <?php endif; ?>
         </small>
     </div>
-    <nav>
+    <nav onclick="if(window.innerWidth <= 768) toggleMenu()">
         <?php if (is_super_admin()): ?>
 
             <!-- ===== MENU SUPER ADMIN ===== -->

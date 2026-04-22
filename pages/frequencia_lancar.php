@@ -296,9 +296,20 @@ function renderLista() {
     alunos.forEach(a => {
         const presente = presentes.includes(a.id);
         const tr = document.createElement('tr');
-        tr.style.background = presente ? '#d1fae5' : '';
-        tr.innerHTML = `<td><strong>${a.nome}</strong><br><span style="font-size:.75rem;color:#64748b">${a.matricula}</span></td>
-                        <td>${presente ? '<span class="badge badge-green">✅ Presente</span>' : '<span class="badge badge-gray">⏳</span>'}</td>`;
+        if (presente) tr.classList.add('row-presente');
+        tr.innerHTML = `<td style="padding:1rem .75rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <strong style="display:block; font-size:1rem; margin-bottom:.2rem;">${a.nome}</strong>
+                                    <span style="font-size:.75rem; color:#64748b;">Matrícula: ${a.matricula}</span>
+                                </div>
+                                <div>
+                                    ${presente 
+                                        ? '<span class="badge badge-green" style="padding:.4rem .8rem; font-size:.8rem;">✓ PRESENTE</span>' 
+                                        : '<span class="badge badge-gray" style="padding:.4rem .8rem; font-size:.8rem; opacity:.5;">FALTANTE</span>'}
+                                </div>
+                            </div>
+                        </td>`;
         tbody.appendChild(tr);
     });
 }
@@ -394,11 +405,15 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <style>
-#qr-reader-turma, #qr-reader-aluno { background:#000; }
+#qr-reader-turma, #qr-reader-aluno { background:#000; border-radius:12px; }
 video { object-fit:cover; }
+.row-presente td { background: #ecfdf5!important; border-left: 5px solid var(--success)!important; }
 @media (max-width:768px) {
-    .cards { grid-template-columns:1fr 1fr 1fr!important; }
-    .card-value { font-size:1.5rem; }
+    .cards { grid-template-columns: 1fr 1fr!important; gap: .75rem; }
+    #ctTotal { grid-column: span 2; }
+    .card-value { font-size:1.75rem; }
+    th { display:none; }
+    td { border-bottom: 1px solid #f1f5f9; }
 }
 </style>
 
