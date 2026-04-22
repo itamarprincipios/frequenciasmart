@@ -69,23 +69,21 @@ include __DIR__ . '/../layout/header.php';
     <table>
         <thead>
             <tr>
-                <th style="width: 40%">Nome</th>
-                <th style="width: 25%">Matrícula</th>
-                <th style="width: 20%">Turma</th>
+                <th style="width: 60%">Nome</th>
+                <th style="width: 25%">Turma</th>
                 <th style="text-align:center; width: 15%">Ações</th>
             </tr>
         </thead>
         <tbody>
             <?php if (empty($alunos)): ?>
             <tr>
-                <td colspan="4" style="text-align:center;color:#94a3b8;padding:2rem">
+                <td colspan="3" style="text-align:center;color:#94a3b8;padding:2rem">
                     Nenhum aluno encontrado. <a href="/alunos/criar" style="color:#4f46e5">+ Cadastrar primeiro aluno</a>
                 </td>
             </tr>
             <?php else: foreach ($alunos as $aluno): ?>
             <tr>
                 <td><strong><?= e($aluno->nome) ?></strong></td>
-                <td><span style="font-family:monospace;font-size:.8rem;color:#475569"><?= e($aluno->matricula) ?></span></td>
                 <td>
                     <?php if ($aluno->turma_nome): ?>
                         <div style="display:flex; flex-direction:column; gap:.2rem">
