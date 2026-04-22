@@ -34,7 +34,7 @@
                     color: #c7d2fe; text-decoration: none; font-size: .875rem; transition: all .2s; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,.1); color: #fff; }
         .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
-        .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,.1); }
+        .sidebar-footer { padding: 1rem 1.5rem 150px; border-top: 1px solid rgba(255,255,255,.1); }
         .sidebar-footer span { display: block; font-size: .75rem; color: #818cf8; }
         .sidebar-footer strong { font-size: .875rem; color: #c7d2fe; }
 
