@@ -15,8 +15,8 @@ if ($turmaId) {
 $alertas = db_all(
     "SELECT al.*, a.nome AS aluno_nome, a.matricula, t.nome AS turma_nome
      FROM alertas al
-     JOIN alunos a ON a.id = al.aluno_id
-     LEFT JOIN turmas t ON t.id = a.turma_id
+     JOIN alunos a ON a.id = al.aluno_id AND a.ativo = 1
+     JOIN turmas t ON t.id = a.turma_id AND t.ativa = 1
      $where
      ORDER BY al.created_at DESC",
     $params
