@@ -69,17 +69,16 @@ include __DIR__ . '/../layout/header.php';
     <table>
         <thead>
             <tr>
-                <th>Nome</th>
-                <th>Matrícula</th>
-                <th>Turma</th>
-                <th>QR Token</th>
-                <th style="text-align:center">Ações</th>
+                <th style="width: 40%">Nome</th>
+                <th style="width: 25%">Matrícula</th>
+                <th style="width: 20%">Turma</th>
+                <th style="text-align:center; width: 15%">Ações</th>
             </tr>
         </thead>
         <tbody>
             <?php if (empty($alunos)): ?>
             <tr>
-                <td colspan="5" style="text-align:center;color:#94a3b8;padding:2rem">
+                <td colspan="4" style="text-align:center;color:#94a3b8;padding:2rem">
                     Nenhum aluno encontrado. <a href="/alunos/criar" style="color:#4f46e5">+ Cadastrar primeiro aluno</a>
                 </td>
             </tr>
@@ -89,28 +88,29 @@ include __DIR__ . '/../layout/header.php';
                 <td><span style="font-family:monospace;font-size:.8rem;color:#475569"><?= e($aluno->matricula) ?></span></td>
                 <td>
                     <?php if ($aluno->turma_nome): ?>
-                        <span class="badge badge-blue"><?= e($aluno->turma_nome) ?></span>
-                        <span style="font-size:.7rem;color:#94a3b8;margin-left:.3rem"><?= e($aluno->turno) ?></span>
+                        <div style="display:flex; flex-direction:column; gap:.2rem">
+                            <span class="badge badge-blue" style="width:fit-content"><?= e($aluno->turma_nome) ?></span>
+                            <span style="font-size:.7rem;color:#94a3b8"><?= e($aluno->turno) ?></span>
+                        </div>
                     <?php else: ?>
                         <span class="badge badge-gray">Sem turma</span>
                     <?php endif; ?>
                 </td>
-                <td><span style="font-family:monospace;font-size:.7rem;color:#94a3b8"><?= e(substr($aluno->qr_token, 0, 12)) ?>…</span></td>
                 <td>
-                    <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap">
+                    <div style="display:flex;gap:.4rem;justify-content:center;align-items:center;">
                         <a href="/alunos/<?= e($aluno->id) ?>/qrcode" target="_blank"
-                           class="btn btn-outline" style="font-size:.75rem;padding:.35rem .7rem" title="Imprimir QR Code">
+                           class="btn btn-outline" style="font-size:.7rem;padding:.3rem .5rem" title="Imprimir QR Code">
                             📱 QR
                         </a>
                         <a href="/alunos/<?= e($aluno->id) ?>/editar"
-                           class="btn btn-primary" style="font-size:.75rem;padding:.35rem .7rem" title="Editar aluno">
+                           class="btn btn-primary" style="font-size:.7rem;padding:.3rem .5rem" title="Editar aluno">
                             ✏️ Editar
                         </a>
                         <form method="POST" action="/alunos/<?= e($aluno->id) ?>/excluir"
-                              onsubmit="return confirm('Excluir <?= e($aluno->nome) ?>?')">
+                               onsubmit="return confirm('Excluir <?= e($aluno->nome) ?>?')">
                             <?php csrf_field(); ?>
                             <button type="submit" class="btn btn-danger"
-                                    style="font-size:.75rem;padding:.35rem .7rem" title="Excluir">🗑️</button>
+                                    style="font-size:.7rem;padding:.3rem .5rem" title="Excluir">🗑️</button>
                         </form>
                     </div>
                 </td>
