@@ -14,23 +14,13 @@ Sistema de controle de frequência escolar sem frameworks. **PHP puro + MySQL + 
    ```
 3. **Faça upload** de todos os arquivos para `public_html/` (ou subpasta)
 4. **Acesse** seu domínio — será redirecionado para o login
-
-## 🔑 Acesso Inicial
-
-| Campo | Valor |
-|---|---|
-| E-mail | `admin@frequenciasmart.com` |
-| Senha | `admin123` |
-
-> ⚠️ **Troque a senha** após o primeiro acesso!
-
 ## 📁 Estrutura
 
 ```
 ├── index.php              ← Roteador principal
 ├── config.php             ← Configurações do banco e sessão
 ├── db.php                 ← Conexão PDO
-├── auth.php               ← Funções de autenticação
+├── aut.php                ← Funções de autenticação e permissões
 ├── helpers.php            ← Funções utilitárias
 ├── .htaccess              ← Rewrite rules (Apache)
 ├── banco.sql              ← Script de criação do banco
