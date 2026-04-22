@@ -147,6 +147,10 @@
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
                 Dashboard
             </a>
+            <a href="/relatorios" class="nav-item <?= rota_ativa('relatorios') ?>">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17v-2a4 4 0 00-4-4H5m11 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m4 6h-6m0 0l3-3m-3 3l3 3"/></svg>
+                Relatórios
+            </a>
             <?php endif; ?>
 
             <?php if (tem_role('DIRETOR','VICE','ORIENTADORA')): ?>

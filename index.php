@@ -137,5 +137,8 @@ if (count($partes) === 3 && $partes[0] === 'alunos' && is_numeric($partes[1])) {
     if ($acao === 'qrcode') { require __DIR__ . '/pages/alunos_qrcode.php'; exit; }
 }
 
+if ($rota === 'relatorios') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/relatorios.php'; exit; }
+if ($rota === 'relatorios/imprimir') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/relatorio_imprimir.php'; exit; }
+
 http_response_code(404);
 echo "404 - Pagina nao encontrada";
