@@ -9,91 +9,151 @@
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-            --primary:    #4f46e5;
-            --primary-dk: #4338ca;
+            --primary:    #6366f1; /* Indigo 500 */
+            --primary-dk: #4f46e5; /* Indigo 600 */
             --success:    #10b981;
             --danger:     #ef4444;
             --warning:    #f59e0b;
-            --bg:         #f1f5f9;
-            --sidebar-w:  240px;
-            --radius:     10px;
+            --bg:         #f8fafc; /* Slate 50 */
+            --text-main:  #0f172a; /* Slate 900 */
+            --text-muted: #64748b; /* Slate 500 */
+            --sidebar-bg: #0f172a; /* Slate 900 */
+            --sidebar-w:  260px;
+            --radius:     12px;
+            --shadow-sm:  0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow:     0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); line-height: 1.5; -webkit-font-smoothing: antialiased; }
 
         /* SIDEBAR */
         .sidebar {
             position: fixed; top: 0; left: 0; height: 100vh; width: var(--sidebar-w);
-            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
-            color: #fff; display: flex; flex-direction: column; padding: 1.5rem 0; z-index: 100;
+            background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; z-index: 100;
         }
-        .sidebar-brand { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,.1); }
-        .sidebar-brand h2 { font-size: 1.25rem; font-weight: 700; color: #c7d2fe; }
-        .sidebar-brand small { font-size: .7rem; color: #818cf8; }
-        .sidebar nav { flex: 1; padding-top: 1rem; }
-        .nav-item { display: flex; align-items: center; gap: .75rem; padding: .7rem 1.5rem;
-                    color: #c7d2fe; text-decoration: none; font-size: .875rem; transition: all .2s; }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,.1); color: #fff; }
-        .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
-        .sidebar-footer { padding: 1rem 1.5rem 150px; border-top: 1px solid rgba(255,255,255,.1); }
-        .sidebar-footer span { display: block; font-size: .75rem; color: #818cf8; }
-        .sidebar-footer strong { font-size: .875rem; color: #c7d2fe; }
+        .sidebar-brand { padding: 2rem 1.5rem; }
+        .sidebar-brand h2 { font-size: 1.25rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: .5rem; }
+        .sidebar-brand small { font-size: .7rem; color: #94a3b8; display: block; margin-top: .25rem; letter-spacing: .02em; }
+        
+        .sidebar nav { flex: 1; padding: 0 1rem; }
+        .nav-item { 
+            display: flex; align-items: center; gap: .75rem; padding: .8rem 1rem;
+            color: #94a3b8; text-decoration: none; font-size: .875rem; font-weight: 500;
+            border-radius: 8px; transition: all .2s ease; margin-bottom: .25rem;
+        }
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,.05); }
+        .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+        .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; opacity: .8; }
+
+        .sidebar-footer { padding: 1.5rem 1rem 140px; border-top: 1px solid rgba(255,255,255,.1); }
+        .user-card { background: rgba(255,255,255,.03); border-radius: 12px; padding: .75rem; border: 1px solid rgba(255,255,255,.05); }
+        .user-card span { display: block; font-size: .7rem; color: #64748b; margin-bottom: .1rem; }
+        .user-card strong { font-size: .825rem; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        
+        .logout-btn { 
+            width: 100%; margin-top: .75rem; background: rgba(239, 68, 68, 0.1); 
+            color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); 
+            padding: .6rem; border-radius: 8px; font-size: .75rem; font-weight: 600;
+            cursor: pointer; transition: all .2s;
+        }
+        .logout-btn:hover { background: #ef4444; color: #fff; border-color: #ef4444; }
 
         /* MAIN */
-        .main { margin-left: var(--sidebar-w); min-height: 100vh; }
-        .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: .75rem 1.5rem;
-                  display: flex; align-items: center; justify-content: space-between; position: sticky; top:0; z-index:50; }
-        .topbar h1 { font-size: 1.1rem; font-weight: 600; }
-        .content { padding: 1.5rem; }
+        .main { margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; }
+        .topbar { 
+            background: #fff; border-bottom: 1px solid #e2e8f0; padding: .75rem 2rem;
+            display: flex; align-items: center; justify-content: space-between; 
+            position: sticky; top:0; z-index:50; box-shadow: var(--shadow-sm); 
+        }
+        .topbar h1 { font-size: 1.1rem; font-weight: 700; color: #1e293b; }
+        .content { padding: 2rem; flex: 1; }
 
         /* CARDS */
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-        .card { background: #fff; border-radius: var(--radius); padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,.06);
-                border-left: 4px solid var(--primary); }
-        .card.green  { border-color: var(--success); }
-        .card.red    { border-color: var(--danger); }
-        .card.yellow { border-color: var(--warning); }
-        .card-label { font-size: .75rem; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
-        .card-value { font-size: 2rem; font-weight: 700; margin-top: .25rem; }
-        .card-sub   { font-size: .75rem; color: #94a3b8; margin-top: .25rem; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { 
+            background: #fff; border-radius: var(--radius); padding: 1.5rem; 
+            box-shadow: var(--shadow); border: 1px solid #f1f5f9; position: relative; overflow: hidden;
+            transition: transform .2s ease;
+        }
+        .card:hover { transform: translateY(-2px); }
+        .card::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--primary); }
+        .card.green::after  { background: var(--success); }
+        .card.red::after    { background: var(--danger); }
+        .card.yellow::after { background: var(--warning); }
+        
+        .card-label { font-size: .7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem; }
+        .card-value { font-size: 2rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; }
+        .card-sub   { font-size: .75rem; color: #94a3b8; margin-top: .5rem; font-weight: 500; }
 
-        /* RESPONSIVIDADE EM TABELAS */
+        /* TABLES */
         .table-wrap { 
-            background: #fff; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,.06); 
-            overflow-x: auto; margin-bottom: 1.5rem; 
-            -webkit-overflow-scrolling: touch;
+            background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); 
+            overflow-x: auto; margin-bottom: 2rem; border: 1px solid #f1f5f9;
         }
         .table-head { 
-            padding: 1rem 1.25rem; border-bottom: 1px solid #e2e8f0; 
-            display: flex; align-items: center; justify-content: space-between; 
-            min-width: max-content; width: 100%;
+            padding: 1.25rem 1.5rem; border-bottom: 1px solid #f1f5f9; 
+            display: flex; align-items: center; justify-content: space-between;
         }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .table-head h3 { font-size: .95rem; font-weight: 700; color: var(--text-main); }
         
-        @media (max-width: 600px) {
-            table { min-width: 100%; }
-            th, td { padding: .75rem .75rem; font-size: .8rem; }
-            .card-value { font-size: 1.5rem; }
-            .topbar h1 { font-size: 1rem; }
-            .content { padding: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th { 
+            background: #f8fafc; padding: 1rem 1.5rem; text-align: left; 
+            font-size: .7rem; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #f1f5f9;
         }
+        td { padding: 1rem 1.5rem; font-size: .875rem; color: #334155; border-bottom: 1px solid #f8fafc; }
+        tr:hover td { background: #fdfdfd; }
+        tr:last-child td { border-bottom: none; }
 
-        /* GRID 2 cols */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        @media (max-width: 1024px) { .grid-2 { grid-template-columns: 1fr; } }
+        /* BADGES */
+        .badge { 
+            display: inline-flex; align-items: center; padding: .25rem .75rem; 
+            border-radius: 6px; font-size: .7rem; font-weight: 700; letter-spacing: 0.01em;
+        }
+        .badge-blue   { background: #e0e7ff; color: #4338ca; }
+        .badge-green  { background: #d1fae5; color: #065f46; }
+        .badge-red    { background: #fee2e2; color: #991b1b; }
+        .badge-yellow { background: #fef3c7; color: #92400e; }
+        .badge-gray   { background: #f1f5f9; color: #475569; }
 
-        /* CARDS */
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        /* BUTTONS */
+        .btn { 
+            display: inline-flex; align-items: center; gap: .5rem; padding: .6rem 1.2rem; 
+            border-radius: 8px; font-size: .825rem; font-weight: 600; cursor: pointer; 
+            border: 1px solid transparent; transition: all .2s; text-decoration: none;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dk); transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        .btn-outline { background: #fff; color: #475569; border-color: #e2e8f0; }
+        .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; color: var(--text-main); }
+        
+        .btn-danger { background: #fee2e2; color: #ef4444; }
+        .btn-danger:hover { background: #ef4444; color: #fff; }
 
-        /* RESPONSIVO MOBILE */
-        .menu-toggle { display: none; background: none; border: none; cursor: pointer; color: #1e293b; margin-right: .75rem; padding: .25rem; }
-        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index: 90; display: none; opacity: 0; transition: opacity 0.3s; }
+        /* FORM */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; font-size: .825rem; font-weight: 600; margin-bottom: .5rem; color: #475569; }
+        .form-control { 
+            width: 100%; padding: .7rem 1rem; border: 1.5px solid #e2e8f0; border-radius: 8px;
+            font-size: .9rem; background: #fff; transition: all .2s; outline: none;
+        }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+
+        /* RESPONSIVIDADE */
+        .menu-toggle { display: none; background: none; border: none; cursor: pointer; color: #64748b; padding: .5rem; border-radius: 8px; }
+        .menu-toggle:hover { background: #f1f5f9; color: var(--text-main); }
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 90; display: none; opacity: 0; transition: opacity 0.3s; }
 
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 15px rgba(0,0,0,0.1); width: 280px; }
+            .sidebar { transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 280px; }
             .sidebar.open { transform: translateX(0); }
             .main { margin-left: 0; }
-            .menu-toggle { display: flex; align-items: center; }
+            .menu-toggle { display: flex; }
             .overlay.show { display: block; opacity: 1; }
+            .content { padding: 1.25rem; }
+            .topbar { padding: .75rem 1.25rem; }
         }
     </style>
     <script>
@@ -118,18 +178,16 @@
         <h2>📚 FrequenciaSmart</h2>
         <small>
             <?php if ($usuario['is_super_admin'] ?? false): ?>
-                ✨ Administrativo Master
+                ADMINISTRATIVO MASTER
             <?php elseif ($usuario['escola_nome'] ?? false): ?>
                 <?= e($usuario['escola_nome']) ?>
             <?php else: ?>
-                Sistema de Frequência
+                SISTEMA DE FREQUÊNCIA
             <?php endif; ?>
         </small>
     </div>
     <nav onclick="if(window.innerWidth <= 768) toggleMenu()">
         <?php if (is_super_admin()): ?>
-
-            <!-- ===== MENU SUPER ADMIN ===== -->
             <a href="/escolas" class="nav-item <?= rota_ativa('escolas') ?>">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 Gerir Escolas
@@ -138,10 +196,7 @@
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 Usuários / Diretores
             </a>
-
         <?php else: ?>
-
-            <!-- ===== MENU ESCOLA (Diretor, Vice, Orientadora, Assistente) ===== -->
             <?php if (tem_role('DIRETOR','VICE')): ?>
             <a href="/dashboard" class="nav-item <?= rota_ativa('dashboard') ?>">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
@@ -175,9 +230,6 @@
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                 Alunos
             </a>
-            <?php endif; ?>
-
-            <?php if (tem_role('DIRETOR','VICE','ORIENTADORA')): ?>
             <a href="/turmas" class="nav-item <?= rota_ativa('turmas') ?>">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 Turmas
@@ -190,24 +242,26 @@
                 Usuários
             </a>
             <?php endif; ?>
-
         <?php endif; ?>
     </nav>
+
     <div class="sidebar-footer">
-        <span>Logado como</span>
-        <strong style="<?= ($usuario['is_super_admin'] ?? false) ? 'color:#fbbf24' : '' ?>">
-            <?= ($usuario['is_super_admin'] ?? false) ? 'Administrador Super usuario' : e($usuario['nome'] ?? 'Usuário') ?>
-        </strong>
-        <span style="margin-top:.2rem">
-            <?php if ($usuario['is_super_admin'] ?? false): ?>
-                <span class="badge" style="background:#fbbf24; color:#1e1b4b">MASTER</span>
-            <?php else: ?>
-                <span class="badge badge-blue"><?= e($usuario['role'] ?? '') ?></span>
-            <?php endif; ?>
-        </span>
-        <form method="POST" action="/logout" style="margin-top:.75rem">
+        <div class="user-card">
+            <span>Logado como:</span>
+            <strong title="<?= e($usuario['nome'] ?? 'Usuário') ?>">
+                <?= e($usuario['nome'] ?? 'Usuário') ?>
+            </strong>
+            <div style="margin-top:.25rem">
+                <?php if ($usuario['is_super_admin'] ?? false): ?>
+                    <span class="badge" style="background:#fbbf24; color:#0f172a">MASTER</span>
+                <?php else: ?>
+                    <span class="badge badge-blue"><?= e($usuario['role'] ?? '') ?></span>
+                <?php endif; ?>
+            </div>
+        </div>
+        <form method="POST" action="/logout">
             <?php csrf_field(); ?>
-            <button type="submit" class="logout-btn">⎋ Sair</button>
+            <button type="submit" class="logout-btn">⎋ Sair do Sistema</button>
         </form>
     </div>
 </aside>
@@ -221,7 +275,9 @@
             </button>
             <h1><?= e($tituloPagina ?? ($usuario['escola_nome'] ?? 'FrequenciaSmart')) ?></h1>
         </div>
-        <span style="font-size:.8rem; color:#64748b"><?= date('d/m/Y') ?></span>
+        <div style="display:flex;align-items:center;gap:1.5rem">
+            <span style="font-size:.875rem; font-weight:600; color:var(--text-muted)"><?= date('d/m/Y') ?></span>
+        </div>
     </div>
     <div class="content">
         <?php if ($erro = get_flash('error')): ?>
