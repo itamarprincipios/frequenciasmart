@@ -7,12 +7,20 @@ $isAssistente = tem_role('ASSISTENTE');
 if (!$isAssistente) {
     // Cards
     $totalFaltasMes = db_one(
-        "SELECT COUNT(*) AS total FROM frequencias WHERE escola_id = ? AND status = 'FALTA' AND DATE_FORMAT(data,'%Y-%m') = ?",
+        "SELECT COUNT(*) AS total 
+         FROM frequencias f
+         JOIN alunos a ON a.id = f.aluno_id AND a.ativo = 1
+         JOIN turmas t ON t.id = f.turma_id AND t.ativa = 1
+         WHERE f.escola_id = ? AND f.status = 'FALTA' AND DATE_FORMAT(f.data,'%Y-%m') = ?",
         [escola_id(), $mes]
     )->total;
 
     $totalAlertasAtivos = db_one(
-        "SELECT COUNT(*) AS total FROM alertas WHERE escola_id = ? AND mes_referencia = ?",
+        "SELECT COUNT(*) AS total 
+         FROM alertas al
+         JOIN alunos a ON a.id = al.aluno_id AND a.ativo = 1
+         JOIN turmas t ON t.id = a.turma_id AND t.ativa = 1
+         WHERE al.escola_id = ? AND al.mes_referencia = ?",
         [escola_id(), $mes]
     )->total;
 
@@ -24,8 +32,8 @@ if (!$isAssistente) {
         "SELECT f.aluno_id, COUNT(*) AS total, a.nome AS aluno_nome,
                 t.nome AS turma_nome
          FROM frequencias f
-         JOIN alunos a ON a.id = f.aluno_id
-         LEFT JOIN turmas t ON t.id = a.turma_id
+         JOIN alunos a ON a.id = f.aluno_id AND a.ativo = 1
+         JOIN turmas t ON t.id = a.turma_id AND t.ativa = 1
          WHERE f.escola_id = ? AND f.status = 'FALTA' AND DATE_FORMAT(f.data,'%Y-%m') = ?
          GROUP BY f.aluno_id
          ORDER BY total DESC
@@ -37,8 +45,8 @@ if (!$isAssistente) {
     $alertasRecentes = db_all(
         "SELECT al.*, a.nome AS aluno_nome, a.matricula, t.nome AS turma_nome
          FROM alertas al
-         JOIN alunos a ON a.id = al.aluno_id
-         LEFT JOIN turmas t ON t.id = a.turma_id
+         JOIN alunos a ON a.id = al.aluno_id AND a.ativo = 1
+         JOIN turmas t ON t.id = a.turma_id AND t.ativa = 1
          WHERE al.escola_id = ?
          ORDER BY al.created_at DESC
          LIMIT 10",
@@ -52,7 +60,7 @@ if (!$isAssistente) {
     $faltasPorTurma = db_all(
         "SELECT f.turma_id, COUNT(*) AS total, t.nome AS turma_nome
          FROM frequencias f
-         JOIN turmas t ON t.id = f.turma_id
+         JOIN turmas t ON t.id = f.turma_id AND t.ativa = 1
          WHERE f.escola_id = ? AND f.status = 'FALTA' AND DATE_FORMAT(f.data,'%Y-%m') = ?
          GROUP BY f.turma_id",
         [escola_id(), $mes]
