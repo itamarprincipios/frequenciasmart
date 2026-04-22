@@ -37,8 +37,10 @@ $_SESSION['usuario'] = [
     'is_super_admin'=> (bool)$user->is_super_admin,
 ];
 
-// Redireciona por role
-if ($user->role === 'ORIENTADORA') {
+// Redireciona por perfil
+if ((bool)$user->is_super_admin) {
+    redirect('/escolas');
+} elseif ($user->role === 'ORIENTADORA') {
     redirect('/orientadora');
 } else {
     redirect('/dashboard');

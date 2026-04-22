@@ -1,18 +1,26 @@
 <?php
 // pages/usuarios_form.php
-requer_role('DIRETOR');
+requer_login();
+if (!is_super_admin() && !tem_role('DIRETOR')) {
+    include __DIR__ . '/403.php';
+    exit;
+}
 
 $id = $id ?? null;
 $u = null;
 if ($id) {
-    $u = db_one("SELECT * FROM users WHERE id = ? AND escola_id = ?", [$id, escola_id()]);
+    if (is_super_admin()) {
+        $u = db_one("SELECT * FROM users WHERE id = ?", [$id]);
+    } else {
+        $u = db_one("SELECT * FROM users WHERE id = ? AND escola_id = ?", [$id, escola_id()]);
+    }
     if (!$u) {
         flash('error', 'Usuário não encontrado.');
         redirect('/usuarios');
     }
 }
 
-$isMaster = $_SESSION['usuario']['is_super_admin'] ?? false;
+$isMaster = is_super_admin();
 $escolas = [];
 if ($isMaster) {
     $escolas = db_all("SELECT id, nome FROM escolas WHERE ativa = 1 ORDER BY nome");

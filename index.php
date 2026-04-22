@@ -94,7 +94,24 @@ if (count($partes) === 2 && $partes[0] === 'usuarios' && is_numeric($partes[1]))
     exit;
 }
 
-if ($rota === 'escolas') { requer_super_admin(); require __DIR__ . '/pages/escolas_index.php'; exit; }
+if ($rota === 'escolas') {
+    requer_super_admin();
+    if ($metodo === 'POST') { require __DIR__ . '/actions/escolas_store.php'; exit; }
+    require __DIR__ . '/pages/escolas_index.php'; exit;
+}
+if ($rota === 'escolas/criar') { requer_super_admin(); require __DIR__ . '/pages/escolas_form.php'; exit; }
+if (count($partes) === 3 && $partes[0] === 'escolas' && is_numeric($partes[1])) {
+    requer_super_admin();
+    $id  = (int)$partes[1];
+    $acao = $partes[2];
+    if ($acao === 'editar') { require __DIR__ . '/pages/escolas_editar.php'; exit; }
+    if ($acao === 'toggle' && $metodo === 'POST') { require __DIR__ . '/actions/escolas_toggle.php'; exit; }
+}
+if (count($partes) === 2 && $partes[0] === 'escolas' && is_numeric($partes[1])) {
+    requer_super_admin();
+    $id = (int)$partes[1];
+    if ($metodo === 'POST') { require __DIR__ . '/actions/escolas_update.php'; exit; }
+}
 if ($rota === 'frequencias') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA', 'ASSISTENTE'); require __DIR__ . '/pages/frequencias.php'; exit; }
 if ($rota === 'frequencia/lancar') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA', 'ASSISTENTE'); require __DIR__ . '/pages/frequencia_lancar.php'; exit; }
 if ($rota === 'frequencia/registrar' && $metodo === 'POST') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA', 'ASSISTENTE'); require __DIR__ . '/actions/frequencia_registrar.php'; exit; }

@@ -1,7 +1,10 @@
 <?php
 // actions/usuarios_store.php
 verificar_csrf();
-requer_role('DIRETOR');
+requer_login();
+if (!is_super_admin() && !tem_role('DIRETOR')) {
+    include __DIR__ . '/pages/403.php'; exit;
+}
 
 $nome     = trim($_POST['nome'] ?? '');
 $email    = trim($_POST['email'] ?? '');
@@ -9,7 +12,7 @@ $password = trim($_POST['password'] ?? '');
 $role     = $_POST['role'] ?? 'ASSISTENTE';
 $ativo    = (int)($_POST['ativo'] ?? 1);
 
-$isMaster  = $_SESSION['usuario']['is_super_admin'] ?? false;
+$isMaster  = is_super_admin();
 $escola_id = (int)($isMaster ? ($_POST['escola_id'] ?? 0) : escola_id());
 
 if (!$nome || !$email || !$password || ($isMaster && !$escola_id)) {
