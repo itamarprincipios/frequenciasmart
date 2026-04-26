@@ -145,6 +145,17 @@ const turmas = <?= json_encode($turmas) ?>;
 let turmaId = '', turmaNome = '', alunos = [], presentes = [];
 let scannerTurma = null, scannerAluno = null, scannerAtivo = false;
 
+// --- VALIDAÇÃO DE TURNO ---
+function getPeriodoAtual() {
+    const hora = new Date().getHours();
+    const min  = new Date().getMinutes();
+    const agora = hora + (min / 60);
+
+    if (agora >= 5 && agora <= 12.5) return 'MANHA';
+    if (agora > 12.5 && agora <= 18.5) return 'TARDE';
+    return 'NOITE';
+}
+
 // --- ETAPAS ---
 function mostrar(etapa) {
     document.getElementById('etapa1').style.display = (etapa===1)?'block':'none';
@@ -198,13 +209,30 @@ function showErroTurma(msg) {
     const el = document.getElementById('scanErroTurma');
     el.textContent = msg;
     el.style.display = 'block';
-    setTimeout(()=>{ el.style.display='none'; }, 3000);
+    // Aumentado o tempo para 5 segundos para mensagens mais longas
+    setTimeout(()=>{ el.style.display='none'; }, 5000);
 }
 
 // --- INICIAR CHAMADA ---
 function iniciarChamada() {
     if (!turmaId) return;
     const t = turmas.find(t => t.id == turmaId);
+    
+    // Validação de Turno (Opção 1: Bloqueio)
+    const periodoAtual = getPeriodoAtual();
+    if (t.turno !== periodoAtual) {
+        showErroTurma(`⚠️ Turno Errado: Esta turma é ${t.turno}, mas agora é o período ${periodoAtual}. Verifique a turma selecionada.`);
+        
+        // Se veio do scanner, reinicia o scanner de turma
+        if (scannerTurma && !scannerTurma.isScanning) {
+             startScannerTurma();
+        }
+        // Reseta o seletor manual se estiver visível
+        document.getElementById('turmaSelectManual').value = '';
+        turmaId = ''; 
+        return;
+    }
+    
     turmaNome = t ? (t.nome + ' – ' + t.turno) : 'Turma';
     alunos = alunosPorTurma[turmaId] || [];
     presentes = [];
