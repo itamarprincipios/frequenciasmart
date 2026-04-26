@@ -17,8 +17,11 @@ include __DIR__ . '/../layout/header.php';
 ?>
 
 <div class="table-wrap">
-    <div class="table-head">
+    <div class="table-head" style="display:flex; justify-content:space-between; align-items:center;">
         <h3>🏫 Turmas Ativas</h3>
+        <a href="/turmas/qrcodes" target="_blank" class="btn btn-primary" style="background:#4f46e5; padding:.5rem .8rem; font-size:.8rem;">
+            🖨️ Imprimir Todos os QRs
+        </a>
     </div>
     <table>
         <thead>
