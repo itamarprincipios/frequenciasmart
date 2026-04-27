@@ -27,22 +27,24 @@ if ($modoAcumulado) {
     $faltasHoje = count(array_filter($dados, fn($d) => ($d->status_hoje ?? '') === 'FALTA'));
     $naoLancado = $totalGeral - $presentes - $faltasHoje;
 } else {
-    // VISÃO GERAL: Log de registros
+    // VISÃO GERAL: Resumo consolidado por Turma para o dia selecionado
     $dados = db_all(
-        "SELECT f.*, a.nome AS aluno_nome, t.nome AS turma_nome, u.nome AS registrador_nome
+        "SELECT t.id AS turma_id, t.nome AS turma_nome, t.turno,
+                COUNT(CASE WHEN f.status = 'FALTA' THEN 1 END) AS total_faltas,
+                COUNT(CASE WHEN f.status = 'PRESENTE' THEN 1 END) AS total_presencas,
+                COUNT(*) AS total_registros
          FROM frequencias f
-         JOIN alunos a ON a.id = f.aluno_id
          JOIN turmas t ON t.id = f.turma_id
-         LEFT JOIN users u ON u.id = f.registrado_por
          WHERE f.escola_id = ? AND f.data = ?
          AND (t.turno = ? OR ? IS NULL)
-         ORDER BY f.created_at DESC",
+         GROUP BY t.id, t.nome, t.turno
+         ORDER BY t.nome ASC",
         [escola_id(), $data, $turno, $turno]
     );
 
     $totalGeral = count($dados);
-    $presentes  = count(array_filter($dados, fn($d) => ($d->status ?? '') === 'PRESENTE'));
-    $faltasHoje = count(array_filter($dados, fn($d) => ($d->status ?? '') === 'FALTA'));
+    $presentes  = array_sum(array_column($dados, 'total_presencas'));
+    $faltasHoje = array_sum(array_column($dados, 'total_faltas'));
 }
 
 // Turmas para o select (filtradas pelo turno se selecionado, para facilitar a busca)
@@ -126,18 +128,19 @@ include __DIR__ . '/../layout/header.php';
         <thead>
             <?php if ($modoAcumulado): ?>
                 <tr>
-                    <th>Aluno</th>
-                    <th style="text-align:center">Presença Hoje</th>
-                    <th style="text-align:center">Faltas Acumuladas</th>
-                    <th style="text-align:center">Situação</th>
+                    <th>Turma</th>
+                    <th style="text-align:center">Turno</th>
+                    <th style="text-align:center">Alunos Presentes</th>
+                    <th style="text-align:center">Alunos Faltantes</th>
+                    <th style="text-align:center">Ações</th>
                 </tr>
             <?php else: ?>
                 <tr>
-                    <th>Aluno</th>
                     <th>Turma</th>
-                    <th>Status</th>
-                    <th>Registrado por</th>
-                    <th>Hora</th>
+                    <th style="text-align:center">Turno</th>
+                    <th style="text-align:center">Total de Faltas</th>
+                    <th style="text-align:center">Total de Presenças</th>
+                    <th style="text-align:center">Ações</th>
                 </tr>
             <?php endif; ?>
         </thead>
@@ -146,9 +149,8 @@ include __DIR__ . '/../layout/header.php';
             <tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:2rem">Nenhum dado encontrado para os filtros selecionados</td></tr>
             <?php else: foreach ($dados as $d): ?>
             <tr>
-                <td><strong><?= e($d->aluno_nome ?? '—') ?></strong></td>
-                
                 <?php if ($modoAcumulado): ?>
+                    <td><strong><?= e($d->aluno_nome ?? '—') ?></strong></td>
                     <td style="text-align:center">
                         <?php if ($d->status_hoje === 'PRESENTE'): ?>
                             <span class="badge badge-green">Presente</span>
@@ -173,16 +175,13 @@ include __DIR__ . '/../layout/header.php';
                         <?php endif; ?>
                     </td>
                 <?php else: ?>
-                    <td><?= e($d->turma_nome ?? '—') ?></td>
-                    <td>
-                        <?php if ($d->status === 'PRESENTE'): ?>
-                            <span class="badge badge-green">✓ Presente</span>
-                        <?php else: ?>
-                            <span class="badge badge-red">✗ Falta</span>
-                        <?php endif; ?>
+                    <td><strong><?= e($d->turma_nome ?? '—') ?></strong></td>
+                    <td style="text-align:center"><span class="badge badge-blue"><?= e($d->turno ?? '—') ?></span></td>
+                    <td style="text-align:center"><strong style="color:var(--success)"><?= e($d->total_presencas) ?></strong></td>
+                    <td style="text-align:center"><strong style="color:var(--danger)"><?= e($d->total_faltas) ?></strong></td>
+                    <td style="text-align:center">
+                        <a href="/frequencias?turma_id=<?= $d->turma_id ?>&data=<?= $data ?>&turno=<?= $turno ?>" class="btn btn-outline" style="padding:.3rem .8rem; font-size:.7rem">🔍 Detalhes</a>
                     </td>
-                    <td style="color:#64748b;font-size:.8rem"><?= e($d->registrador_nome ?? '—') ?></td>
-                    <td style="color:#94a3b8;font-size:.8rem"><?= date('H:i', strtotime($d->created_at)) ?></td>
                 <?php endif; ?>
             </tr>
             <?php endforeach; endif; ?>
