@@ -141,7 +141,19 @@
         }
         .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
 
-        /* RESPONSIVIDADE */
+        /* CHARTS */
+        .chart-wrap { 
+            background: #fff; border-radius: var(--radius); padding: 1.5rem; 
+            box-shadow: var(--shadow); border: 1px solid #f1f5f9;
+            display: flex; flex-direction: column; gap: 1rem;
+            height: 100%;
+        }
+        .chart-wrap h3 { font-size: .95rem; font-weight: 700; color: var(--text-main); }
+        .chart-wrap canvas { max-height: 280px !important; width: 100% !important; }
+
+        /* GRID 2 cols */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        @media (max-width: 1024px) { .grid-2 { grid-template-columns: 1fr; } }
         .menu-toggle { display: none; background: none; border: none; cursor: pointer; color: #64748b; padding: .5rem; border-radius: 8px; }
         .menu-toggle:hover { background: #f1f5f9; color: var(--text-main); }
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 90; display: none; opacity: 0; transition: opacity 0.3s; }
