@@ -139,8 +139,8 @@ include __DIR__ . '/../layout/header.php';
 
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
-const alunosPorTurma = <?= json_encode($alunosPorTurma) ?>;
 const turmas = <?= json_encode($turmas) ?>;
+const papelUsuario = '<?= $_SESSION['usuario']['role'] ?>';
 
 let turmaId = '', turmaNome = '', alunos = [], presentes = [];
 let scannerTurma = null, scannerAluno = null, scannerAtivo = false;
@@ -218,19 +218,23 @@ function iniciarChamada() {
     if (!turmaId) return;
     const t = turmas.find(t => t.id == turmaId);
     
-    // Validação de Turno (Opção 1: Bloqueio)
+    // Validação de Turno (Com Confirmação para correções)
     const periodoAtual = getPeriodoAtual();
+    const dataSelecionada = document.getElementById('data').value;
+    const dataHoje = new Date().toISOString().split('T')[0];
+
     if (t.turno !== periodoAtual) {
-        showErroTurma(`⚠️ Turno Errado: Esta turma é ${t.turno}, mas agora é o período ${periodoAtual}. Verifique a turma selecionada.`);
+        const msg = `⚠️ Turno Diferente: Esta turma é do turno ${t.turno}, mas o período agora é ${periodoAtual}.\n\n` +
+                    `Se você está tentando corrigir ou registrar uma chamada atrasada, clique em OK para continuar.\n\n` +
+                    `Deseja prosseguir?`;
         
-        // Se veio do scanner, reinicia o scanner de turma
-        if (scannerTurma && !scannerTurma.isScanning) {
-             startScannerTurma();
+        if (!confirm(msg)) {
+            // Reseta e volta
+            if (scannerTurma && !scannerTurma.isScanning) startScannerTurma();
+            document.getElementById('turmaSelectManual').value = '';
+            turmaId = ''; 
+            return;
         }
-        // Reseta o seletor manual se estiver visível
-        document.getElementById('turmaSelectManual').value = '';
-        turmaId = ''; 
-        return;
     }
     
     turmaNome = t ? (t.nome + ' – ' + t.turno) : 'Turma';
