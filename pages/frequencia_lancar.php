@@ -139,6 +139,7 @@ include __DIR__ . '/../layout/header.php';
 
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
+const alunosPorTurma = <?= json_encode($alunosPorTurma) ?>;
 const turmas = <?= json_encode($turmas) ?>;
 const papelUsuario = '<?= $_SESSION['usuario']['role'] ?>';
 
@@ -188,8 +189,17 @@ function onScanTurma(text) {
         const t = turmas.find(t => t.id == payload.turma_id);
         if (!t) { showErroTurma('Turma não encontrada!'); return; }
         if (t.qr_token !== payload.qr_token) { showErroTurma('QR Code inválido!'); return; }
+        
         turmaId = payload.turma_id;
-        scannerTurma.stop().then(() => iniciarChamada());
+        // Paramos o scanner e seguimos para a chamada. 
+        // Em alguns celulares, o stop() pode demorar, então usamos o finally para garantir a transição.
+        if (scannerTurma) {
+            scannerTurma.stop().catch(err => console.warn("Erro ao parar scanner:", err)).finally(() => {
+                iniciarChamada();
+            });
+        } else {
+            iniciarChamada();
+        }
     } catch(e) { /* ignora frames ruins */ }
 }
 
@@ -216,20 +226,27 @@ function showErroTurma(msg) {
 // --- INICIAR CHAMADA ---
 function iniciarChamada() {
     if (!turmaId) return;
+    
+    // Garantir que a comparação funcione independente de tipo (string/number)
     const t = turmas.find(t => t.id == turmaId);
+    
+    // SEGURANÇA: Se a turma não for encontrada na lista, avisa e para.
+    if (!t) {
+        alert("Erro: Turma não encontrada na lista local. Por favor, atualize a página.");
+        if (scannerTurma && !scannerTurma.isScanning) startScannerTurma();
+        return;
+    }
     
     // Validação de Turno (Com Confirmação para correções)
     const periodoAtual = getPeriodoAtual();
-    const dataSelecionada = document.getElementById('data').value;
-    const dataHoje = new Date().toISOString().split('T')[0];
-
+    
     if (t.turno !== periodoAtual) {
         const msg = `⚠️ Turno Diferente: Esta turma é do turno ${t.turno}, mas o período agora é ${periodoAtual}.\n\n` +
                     `Se você está tentando corrigir ou registrar uma chamada atrasada, clique em OK para continuar.\n\n` +
                     `Deseja prosseguir?`;
         
         if (!confirm(msg)) {
-            // Reseta e volta
+            // Reseta e volta para a etapa 1 reiniciando o scanner
             if (scannerTurma && !scannerTurma.isScanning) startScannerTurma();
             document.getElementById('turmaSelectManual').value = '';
             turmaId = ''; 
@@ -237,7 +254,7 @@ function iniciarChamada() {
         }
     }
     
-    turmaNome = t ? (t.nome + ' – ' + t.turno) : 'Turma';
+    turmaNome = t.nome + ' – ' + t.turno;
     alunos = alunosPorTurma[turmaId] || [];
     presentes = [];
     salvarEstado();
