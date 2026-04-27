@@ -4,19 +4,22 @@ requer_login();
 
 $turmaId = $_GET['turma_id'] ?? null;
 $data    = $_GET['data'] ?? date('Y-m-d');
+$turno   = $_GET['turno'] ?? null;
 
 $modoAcumulado = !empty($turmaId);
 
 if ($modoAcumulado) {
-    // VISÃO POR TURMA: Todos os alunos + Faltas acumuladas + Status do dia selecionado
+    // VISÃO POR TURMA
     $dados = db_all(
         "SELECT a.id, a.nome as aluno_nome, 
                 (SELECT f.status FROM frequencias f WHERE f.aluno_id = a.id AND f.data = ?) as status_hoje,
                 (SELECT COUNT(*) FROM frequencias f WHERE f.aluno_id = a.id AND f.status = 'FALTA' AND f.data <= ?) as total_faltas
          FROM alunos a
+         JOIN turmas t ON t.id = a.turma_id
          WHERE a.turma_id = ? AND a.ativo = 1
+         AND (t.turno = ? OR ? IS NULL)
          ORDER BY a.nome",
-        [$data, $data, $turmaId]
+        [$data, $data, $turmaId, $turno, $turno]
     );
     
     $totalGeral = count($dados);
@@ -24,7 +27,7 @@ if ($modoAcumulado) {
     $faltasHoje = count(array_filter($dados, fn($d) => ($d->status_hoje ?? '') === 'FALTA'));
     $naoLancado = $totalGeral - $presentes - $faltasHoje;
 } else {
-    // VISÃO GERAL: Log de registros do dia selecionado em toda a escola
+    // VISÃO GERAL: Log de registros
     $dados = db_all(
         "SELECT f.*, a.nome AS aluno_nome, t.nome AS turma_nome, u.nome AS registrador_nome
          FROM frequencias f
@@ -32,8 +35,9 @@ if ($modoAcumulado) {
          JOIN turmas t ON t.id = f.turma_id
          LEFT JOIN users u ON u.id = f.registrado_por
          WHERE f.escola_id = ? AND f.data = ?
+         AND (t.turno = ? OR ? IS NULL)
          ORDER BY f.created_at DESC",
-        [escola_id(), $data]
+        [escola_id(), $data, $turno, $turno]
     );
 
     $totalGeral = count($dados);
@@ -41,7 +45,14 @@ if ($modoAcumulado) {
     $faltasHoje = count(array_filter($dados, fn($d) => ($d->status ?? '') === 'FALTA'));
 }
 
-$turmas = db_all("SELECT * FROM turmas WHERE escola_id = ? AND ativa = 1", [escola_id()]);
+// Turmas para o select (filtradas pelo turno se selecionado, para facilitar a busca)
+$sqlTurmas = "SELECT * FROM turmas WHERE escola_id = ? AND ativa = 1";
+$paramsTurmas = [escola_id()];
+if ($turno) {
+    $sqlTurmas .= " AND turno = ?";
+    $paramsTurmas[] = $turno;
+}
+$turmas = db_all($sqlTurmas . " ORDER BY nome", $paramsTurmas);
 
 $tituloPagina = 'Frequências';
 include __DIR__ . '/../layout/header.php';
@@ -56,12 +67,22 @@ include __DIR__ . '/../layout/header.php';
                 <label>Data</label>
                 <input type="date" name="data" value="<?= e($data) ?>" class="form-control">
             </div>
+            <div class="form-group" style="margin:0;flex:1;min-width:140px">
+                <label>Turno</label>
+                <select name="turno" class="form-control" onchange="this.form.submit()">
+                    <option value="">-- Todos --</option>
+                    <option value="MANHA" <?= ($turno ?? '') === 'MANHA' ? 'selected' : '' ?>>Matutino</option>
+                    <option value="TARDE" <?= ($turno ?? '') === 'TARDE' ? 'selected' : '' ?>>Vespertino</option>
+                </select>
+            </div>
             <div class="form-group" style="margin:0;flex:1;min-width:160px">
                 <label>Turma</label>
                 <select name="turma_id" class="form-control" onchange="this.form.submit()">
-                    <option value="">-- Todas as Turmas (Visão de Log) --</option>
+                    <option value="">-- Todas as Turmas (Log) --</option>
                     <?php foreach ($turmas as $t): ?>
-                    <option value="<?= e($t->id) ?>" <?= $turmaId == $t->id ? 'selected' : '' ?>><?= e($t->nome) ?></option>
+                    <option value="<?= e($t->id) ?>" <?= $turmaId == $t->id ? 'selected' : '' ?>>
+                        <?= e($t->nome) ?> (<?= e($t->turno) ?>)
+                    </option>
                     <?php endforeach; ?>
                 </select>
             </div>
