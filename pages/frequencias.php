@@ -138,8 +138,8 @@ include __DIR__ . '/../layout/header.php';
                 <tr>
                     <th>Turma</th>
                     <th style="text-align:center">Turno</th>
-                    <th style="text-align:center">Total de Faltas</th>
-                    <th style="text-align:center">Total de Presenças</th>
+                    <th style="text-align:center">Alunos Presentes</th>
+                    <th style="text-align:center">Alunos Faltantes</th>
                     <th style="text-align:center">Ações</th>
                 </tr>
             <?php endif; ?>
