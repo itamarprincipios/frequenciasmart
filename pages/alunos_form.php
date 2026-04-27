@@ -57,7 +57,7 @@ include __DIR__ . '/../layout/header.php';
                     <label for="matricula">Matrícula *</label>
                     <input type="text" id="matricula" name="matricula"
                            value="<?= old('matricula', $aluno->matricula ?? '') ?>"
-                           class="form-control" placeholder="Ex: 2026001" required>
+                           class="form-control" placeholder="Ex: <?= date('Y') ?>001" required>
                     <small style="color:#94a3b8;font-size:.75rem">Deve ser única no sistema</small>
                 </div>
 

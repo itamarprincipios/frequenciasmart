@@ -152,7 +152,7 @@ $tituloPagina = "Notificação - " . $alerta->aluno_nome;
         </div>
         <div class="assinatura-box" style="grid-column: span 2; width: 60%; margin: 40px auto 0;">
             <strong>Assinatura do Responsável</strong><br>
-            <span style="font-size: 0.7rem;">Data: ____/____/2026</span>
+            <span style="font-size: 0.7rem;">Data: ____/____/<?= date('Y') ?></span>
         </div>
     </div>
 
