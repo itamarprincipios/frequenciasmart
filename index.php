@@ -84,10 +84,7 @@ if (count($partes) === 3 && $partes[0] === 'usuarios' && is_numeric($partes[1]))
     $id = (int)$partes[1];
     $acao = $partes[2];
     if ($acao === 'editar') { require __DIR__ . '/pages/usuarios_form.php'; exit; }
-    if ($
-    ,
-    
-    === 'excluir' && $metodo === 'POST') { require __DIR__ . '/actions/usuarios_destroy.php'; exit; }
+    if ($acao === 'excluir' && $metodo === 'POST') { require __DIR__ . '/actions/usuarios_destroy.php'; exit; }
 }
 
 if (count($partes) === 2 && $partes[0] === 'usuarios' && is_numeric($partes[1])) {
