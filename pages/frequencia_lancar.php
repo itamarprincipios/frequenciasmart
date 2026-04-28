@@ -52,6 +52,17 @@ include __DIR__ . '/../layout/header.php';
         </div>
     </div>
 
+    <!-- PAINEL: Turmas Pendentes do Turno Atual -->
+    <div id="painelPendentes" class="table-wrap" style="max-width:500px;margin:1.25rem auto 0;">
+        <div class="table-head" style="justify-content:space-between;">
+            <h3 id="tituloPendentes">⏳ Turmas Pendentes</h3>
+            <span id="badgePendentes" class="badge badge-blue" style="font-size:.75rem;">—</span>
+        </div>
+        <div id="corpoPendentes" style="padding:1rem;">
+            <div style="text-align:center;padding:1rem;color:#94a3b8;font-size:.85rem;">Carregando...</div>
+        </div>
+    </div>
+
     <!-- ETAPA 2: Scanner + Lista de alunos -->
     <div id="etapa2" style="display:none;">
         <div class="cards" style="grid-template-columns:1fr 1fr 1fr;">
@@ -435,10 +446,108 @@ function playBeep() {
 }
 
 // --- FORM SUBMIT ---
-document.getElementById('formFinal').addEventListener('submit', () => limparEstado());
+document.getElementById('formFinal').addEventListener('submit', () => {
+    limparEstado();
+    // Agenda atualização da lista após o redirecionamento — feita via polling normal
+});
+
+// ============================================================
+// --- PAINEL DE TURMAS PENDENTES ---
+// ============================================================
+
+const TURNO_LABELS = { MANHA: 'Manhã', TARDE: 'Tarde', NOITE: 'Noite' };
+let _intervaloPolling = null;
+
+function getTurnoAtual() {
+    const hora = new Date().getHours();
+    const min  = new Date().getMinutes();
+    const agora = hora + (min / 60);
+    if (agora >= 5  && agora <= 12.5) return 'MANHA';
+    if (agora >  12.5 && agora <= 18.5) return 'TARDE';
+    return 'NOITE';
+}
+
+async function carregarPendentes() {
+    const data  = document.getElementById('data').value;
+    const turno = getTurnoAtual();
+    try {
+        const resp = await fetch(`/api/turmas-pendentes?data=${data}&turno=${turno}`);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const json = await resp.json();
+        renderPendentes(json);
+    } catch (e) {
+        document.getElementById('corpoPendentes').innerHTML =
+            '<div style="text-align:center;padding:1rem;color:#ef4444;font-size:.85rem;">Erro ao carregar pendentes.</div>';
+    }
+}
+
+function renderPendentes(json) {
+    const turnoLabel = TURNO_LABELS[json.turno] || json.turno;
+    const titulo     = document.getElementById('tituloPendentes');
+    const badge      = document.getElementById('badgePendentes');
+    const corpo      = document.getElementById('corpoPendentes');
+    const painel     = document.getElementById('painelPendentes');
+
+    titulo.textContent = `⏳ Pendentes — Turno ${turnoLabel}`;
+
+    if (json.total === 0) {
+        badge.textContent = '✓ Tudo OK';
+        badge.className   = 'badge badge-green';
+        painel.style.borderLeft = '4px solid var(--success)';
+        corpo.innerHTML = `
+            <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem 0;">
+                <span style="font-size:2rem;">🎉</span>
+                <div>
+                    <strong style="color:var(--success);display:block;">Todas as turmas lançadas!</strong>
+                    <span style="font-size:.8rem;color:#64748b;">Todas as turmas do turno ${turnoLabel} já tiveram frequência registrada hoje.</span>
+                </div>
+            </div>`;
+        return;
+    }
+
+    badge.textContent = json.total + (json.total === 1 ? ' faltando' : ' faltando');
+    badge.className   = 'badge badge-red';
+    painel.style.borderLeft = '4px solid var(--danger)';
+
+    let html = '<ul style="list-style:none;padding:0;margin:0;">';
+    json.turmas.forEach((t, i) => {
+        const isLast = (i === json.turmas.length - 1);
+        html += `
+            <li style="
+                display:flex;align-items:center;gap:.75rem;
+                padding:.6rem .25rem;
+                ${!isLast ? 'border-bottom:1px solid #f1f5f9;' : ''}
+            ">
+                <span style="
+                    width:8px;height:8px;border-radius:50%;
+                    background:var(--danger);flex-shrink:0;
+                    animation: pulsar 1.5s ease-in-out infinite;
+                "></span>
+                <div style="flex:1;">
+                    <strong style="display:block;font-size:.9rem;">${t.nome}</strong>
+                    <span style="font-size:.75rem;color:#94a3b8;">${t.total_alunos} aluno(s) cadastrado(s)</span>
+                </div>
+                <span class="badge badge-gray" style="font-size:.7rem;opacity:.7;">${TURNO_LABELS[t.turno] || t.turno}</span>
+            </li>`;
+    });
+    html += '</ul>';
+    corpo.innerHTML = html;
+}
+
+function iniciarPollingPendentes() {
+    carregarPendentes();
+    if (_intervaloPolling) clearInterval(_intervaloPolling);
+    _intervaloPolling = setInterval(carregarPendentes, 30000);
+}
+
+// Recarrega ao mudar a data
+document.getElementById('data').addEventListener('change', () => {
+    carregarPendentes();
+});
 
 // --- INIT ---
 document.addEventListener('DOMContentLoaded', () => {
+    iniciarPollingPendentes();
     if (recuperarEstado() && turmaId) {
         mostrar(2);
         atualizarContadores();
@@ -457,12 +566,33 @@ document.addEventListener('DOMContentLoaded', () => {
 #qr-reader-turma, #qr-reader-aluno { background:#000; border-radius:12px; }
 video { object-fit:cover; }
 .row-presente td { background: #ecfdf5!important; border-left: 5px solid var(--success)!important; }
+
+/* Painel Pendentes */
+#painelPendentes {
+    border-left: 4px solid var(--primary);
+    transition: border-color .4s ease;
+}
+.badge-red {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+}
+.badge-green {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #86efac;
+}
+@keyframes pulsar {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: .4; transform: scale(1.4); }
+}
 @media (max-width:768px) {
     .cards { grid-template-columns: 1fr 1fr!important; gap: .75rem; }
     #ctTotal { grid-column: span 2; }
     .card-value { font-size:1.75rem; }
     th { display:none; }
     td { border-bottom: 1px solid #f1f5f9; }
+    #painelPendentes { max-width:100% !important; }
 }
 </style>
 
