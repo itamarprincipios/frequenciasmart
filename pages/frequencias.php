@@ -2,11 +2,12 @@
 // pages/frequencias.php
 requer_login();
 
-$turmaId = $_GET['turma_id'] ?? null;
-$data    = $_GET['data'] ?? date('Y-m-d');
-$turno   = $_GET['turno'] ?? null;
+$turmaId = !empty($_GET['turma_id']) ? $_GET['turma_id'] : null;
+$data    = !empty($_GET['data']) ? $_GET['data'] : date('Y-m-d');
+$turno   = !empty($_GET['turno']) ? $_GET['turno'] : null;
 
 $modoAcumulado = !empty($turmaId);
+
 
 if ($modoAcumulado) {
     // VISÃO POR TURMA
