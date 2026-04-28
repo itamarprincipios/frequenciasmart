@@ -2,9 +2,9 @@
 // pages/frequencias.php
 requer_login();
 
-$turmaId = $_GET['turma_id'] ?? null;
-$data    = $_GET['data'] ?? date('Y-m-d');
-$turno   = $_GET['turno'] ?? null;
+$turmaId = !empty($_GET['turma_id']) ? $_GET['turma_id'] : null;
+$data    = !empty($_GET['data']) ? $_GET['data'] : date('Y-m-d');
+$turno   = !empty($_GET['turno']) ? $_GET['turno'] : null;
 
 $modoAcumulado = !empty($turmaId);
 
@@ -128,11 +128,11 @@ include __DIR__ . '/../layout/header.php';
         <thead>
             <?php if ($modoAcumulado): ?>
                 <tr>
-                    <th>Turma</th>
-                    <th style="text-align:center">Turno</th>
-                    <th style="text-align:center">Alunos Presentes</th>
-                    <th style="text-align:center">Alunos Faltantes</th>
-                    <th style="text-align:center">Ações</th>
+                    <th>Aluno</th>
+                    <th style="text-align:center">Presença Hoje</th>
+                    <th style="text-align:center">Faltas Acumuladas</th>
+                    <th style="text-align:center">Situação</th>
+                    <th style="text-align:center">Ação Rápida</th>
                 </tr>
             <?php else: ?>
                 <tr>
@@ -174,7 +174,22 @@ include __DIR__ . '/../layout/header.php';
                             <span class="badge badge-green" style="background:#f0fdf4; color:#15803d; border:1px solid #dcfce7">OK</span>
                         <?php endif; ?>
                     </td>
-                <?php else: ?>
+                    <td style="text-align:center">
+                        <form method="POST" action="/frequencia/manual" style="display:inline-block;">
+                            <?php csrf_field(); ?>
+                            <input type="hidden" name="aluno_id" value="<?= $d->id ?>">
+                            <input type="hidden" name="turma_id" value="<?= $turmaId ?>">
+                            <input type="hidden" name="data" value="<?= $data ?>">
+                            <?php if ($d->status_hoje === 'PRESENTE'): ?>
+                                <input type="hidden" name="status" value="FALTA">
+                                <button type="submit" class="btn btn-outline" style="padding:.2rem .5rem; font-size:.65rem; color:var(--danger)">✗ Dar Falta</button>
+                            <?php else: ?>
+                                <input type="hidden" name="status" value="PRESENTE">
+                                <button type="submit" class="btn btn-outline" style="padding:.2rem .5rem; font-size:.65rem; color:var(--success)">✓ Dar Presença</button>
+                            <?php endif; ?>
+                        </form>
+                    </td>
+<?php else: ?>
                     <td><strong><?= e($d->turma_nome ?? '—') ?></strong></td>
                     <td style="text-align:center"><span class="badge badge-blue"><?= e($d->turno ?? '—') ?></span></td>
                     <td style="text-align:center"><strong style="color:var(--success)"><?= e($d->total_presencas) ?></strong></td>

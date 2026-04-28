@@ -116,6 +116,7 @@ if (count($partes) === 2 && $partes[0] === 'escolas' && is_numeric($partes[1])) 
 if ($rota === 'frequencias') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA', 'ASSISTENTE'); require __DIR__ . '/pages/frequencias.php'; exit; }
 if ($rota === 'frequencia/lancar') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA', 'ASSISTENTE'); require __DIR__ . '/pages/frequencia_lancar.php'; exit; }
 if ($rota === 'frequencia/registrar' && $metodo === 'POST') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA', 'ASSISTENTE'); require __DIR__ . '/actions/frequencia_registrar.php'; exit; }
+if ($rota === 'frequencia/manual' && $metodo === 'POST') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA', 'ASSISTENTE'); require __DIR__ . '/actions/frequencia_manual_update.php'; exit; }
 if ($rota === 'alunos') {
     requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
     if ($metodo === 'POST') require __DIR__ . '/actions/alunos_store.php';
