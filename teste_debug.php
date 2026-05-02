@@ -23,10 +23,18 @@ try {
 
     echo "5. Testando conexão com o Banco... ";
     $res = db_one("SELECT 1 as teste");
-    if ($res) echo "✅ Conectado ao banco!<br>";
+    if ($res) echo "✅ OK<br>";
 
-    echo "6. Verificando função usuario_logado()... ";
-    if (function_exists('usuario_logado')) echo "✅ Função existe!<br>";
+    echo "6. Testando consulta na tabela 'escolas'... ";
+    $esc = db_all("SELECT id, nome FROM escolas WHERE ativa = 1");
+    echo "✅ Encontradas " . count($esc) . " escolas<br>";
+
+    echo "7. Testando consulta na tabela 'turmas'... ";
+    $tur = db_all("SELECT id, nome, turno, escola_id FROM turmas WHERE ativa = 1");
+    echo "✅ Encontradas " . count($tur) . " turmas<br>";
+
+    echo "8. Verificando função usuario_logado()... ";
+    if (function_exists('usuario_logado')) echo "✅ OK<br>";
 
     echo "<h3>🎉 Tudo parece estar configurado corretamente!</h3>";
 
