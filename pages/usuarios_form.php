@@ -74,6 +74,31 @@ include __DIR__ . '/../layout/header.php';
             </select>
         </div>
 
+        <?php 
+        $turmasDisponiveis = db_all("SELECT id, nome, turno FROM turmas WHERE ativa = 1 AND escola_id = ? ORDER BY nome", [escola_id()]);
+        ?>
+        <div class="form-group" style="padding: 1rem; background: #f0fdf4; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #bbf7d0;">
+            <label style="color: #166534; font-weight: bold;">📊 Integração Google Sheets (Diário)</label>
+            
+            <div style="margin-top: .5rem;">
+                <label style="font-size: .8rem;">Turma que este usuário leciona</label>
+                <select name="turma_id" class="form-control">
+                    <option value="">-- Nenhuma (Acesso Geral) --</option>
+                    <?php foreach ($turmasDisponiveis as $t): ?>
+                        <option value="<?= $t->id ?>" <?= ($u && $u->turma_id == $t->id) ? 'selected' : '' ?>>
+                            <?= e($t->nome) ?> (<?= e($t->turno) ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div style="margin-top: 1rem;">
+                <label style="font-size: .8rem;">ID da Planilha Google (Spreadsheet ID)</label>
+                <input type="text" name="spreadsheet_id" class="form-control" value="<?= e($u->spreadsheet_id ?? '') ?>" placeholder="Ex: 1abc123... (Pega na URL da planilha)">
+                <small style="color: #16a34a; font-size: .7rem;">O professor deve compartilhar a planilha com o e-mail da Service Account.</small>
+            </div>
+        </div>
+
         <div class="form-group">
             <label><?= $id ? 'Nova Senha (deixe em branco para manter)' : 'Senha de Acesso' ?></label>
             <input type="password" name="password" class="form-control" <?= $id ? '' : 'required' ?>>

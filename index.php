@@ -12,6 +12,10 @@ require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/aut.php';
 require_once __DIR__ . '/helpers.php';
 
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
 iniciar_sessao();
 
 // Pega a rota da URL

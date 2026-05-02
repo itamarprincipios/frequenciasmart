@@ -107,6 +107,17 @@ function fmt_datetime(string $dt): string {
 /**
  * Retorna mês atual no formato Y-m
  */
+/**
+ * Retorna o bimestre atual baseado no mês para o diário escolar
+ */
+function get_bimestre_atual(string $data): string {
+    $mes = (int)date('m', strtotime($data));
+    if ($mes >= 2 && $mes <= 4) return '1º Bim';
+    if ($mes >= 5 && $mes <= 7) return '2º Bim';
+    if ($mes >= 8 && $mes <= 9) return '3º Bim';
+    return '4º Bim';
+}
+
 function mes_atual(): string {
     return date('Y-m');
 }

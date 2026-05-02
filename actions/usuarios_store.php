@@ -9,8 +9,10 @@ if (!is_super_admin() && !tem_role('DIRETOR')) {
 $nome     = trim($_POST['nome'] ?? '');
 $email    = trim($_POST['email'] ?? '');
 $password = trim($_POST['password'] ?? '');
-$role     = $_POST['role'] ?? 'ASSISTENTE';
-$ativo    = (int)($_POST['ativo'] ?? 1);
+$role           = $_POST['role'] ?? 'ASSISTENTE';
+$ativo          = (int)($_POST['ativo'] ?? 1);
+$turma_id       = !empty($_POST['turma_id']) ? (int)$_POST['turma_id'] : null;
+$spreadsheet_id = trim($_POST['spreadsheet_id'] ?? '');
 
 $isMaster  = is_super_admin();
 $escola_id = (int)($isMaster ? ($_POST['escola_id'] ?? 0) : escola_id());
@@ -31,8 +33,8 @@ $hash = password_hash($password, PASSWORD_DEFAULT);
 
 try {
     db_insert(
-        "INSERT INTO users (nome, email, password, role, ativo, escola_id) VALUES (?, ?, ?, ?, ?, ?)",
-        [$nome, $email, $hash, $role, $ativo, $escola_id]
+        "INSERT INTO users (nome, email, password, role, ativo, escola_id, turma_id, spreadsheet_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [$nome, $email, $hash, $role, $ativo, $escola_id, $turma_id, $spreadsheet_id]
     );
     flash('success', 'Usuário cadastrado com sucesso.');
     redirect('/usuarios');

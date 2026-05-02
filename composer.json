@@ -1,0 +1,17 @@
+{
+    "name": "itamarprincipios/frequencia-smart-sheets",
+    "description": "FrequenciaSmart com integração Google Sheets",
+    "type": "project",
+    "require": {
+        "google/apiclient": "2.15"
+    },
+    "authors": [
+        {
+            "name": "Itamar",
+            "email": "itamar@example.com"
+        }
+    ],
+    "config": {
+        "secure-http": false
+    }
+}

@@ -68,6 +68,34 @@ foreach ($todosAlunos as $aluno) {
     }
 }
 
+// --- SINCRONIZAÇÃO COM GOOGLE SHEETS ---
+$turmaCompleta = db_one("SELECT * FROM turmas WHERE id = ?", [$turmaId]);
+if ($turmaCompleta && $turmaCompleta->spreadsheet_id && class_exists('\Google\Client')) {
+    try {
+        require_once __DIR__ . '/../services/GoogleSheetsService.php';
+        $sheetsService = new \Services\GoogleSheetsService($turmaCompleta->spreadsheet_id);
+        
+        $listaFrequencia = [];
+        // Re-mapear para usar os nomes dos alunos como chave
+        foreach ($todosAlunos as $aluno) {
+            $status = in_array((string)$aluno->id, array_map('strval', $presentes)) ? 'PRESENTE' : 'FALTA';
+            // Buscamos o nome completo do aluno para bater com a planilha
+            $alunoInfo = db_one("SELECT nome FROM alunos WHERE id = ?", [$aluno->id]);
+            if ($alunoInfo) {
+                $listaFrequencia[$alunoInfo->nome] = $status;
+            }
+        }
+
+        $aba = "Frequência " . get_bimestre_atual($data);
+        $sheetsService->lancarFrequencia($aba, $data, $listaFrequencia);
+        
+    } catch (Exception $e) {
+        error_log("Falha ao sincronizar com Google Sheets: " . $e->getMessage());
+        // Opcional: Avisar ao usuário que o Google falhou mas o local salvou
+        flash('warning', 'Frequência salva localmente, mas houve um erro ao sincronizar com o Google Sheets.');
+    }
+}
+
 $total = count($todosAlunos);
 flash('success', "Frequência registrada! {$countPresentes} presentes, {$countFaltas} falta(s) de {$total} alunos.");
 redirect('/frequencias?turma_id=' . $turmaId . '&data=' . $data);
