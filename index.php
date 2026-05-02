@@ -43,6 +43,11 @@ if ($rota === 'logout' && $metodo === 'POST') {
     exit;
 }
 
+if ($rota === 'cadastro_professor') {
+    require __DIR__ . '/cadastro_professor.php';
+    exit;
+}
+
 requer_login();
 $partes = explode('/', $rota);
 
