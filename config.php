@@ -17,10 +17,10 @@ if ($isLocal) {
 } else {
     // ---- PRODUÇÃO (Hostinger) ----
     define('DB_HOST', 'localhost');
-    define('DB_NAME', 'u199671261_dbfsmart');
-    define('DB_USER', 'u199671261_admfsmart');
-    define('DB_PASS', 'Pw^4TOVh2');
-    define('APP_URL',  'https://frequenciasmart.cloud');
+    define('DB_NAME', 'u199671261_smartsheets');
+    define('DB_USER', 'u199671261_smart');
+    define('DB_PASS', 'Ana@2026');
+    define('APP_URL',  'https://frequenciasmart.cloud'); // Mantenha a URL ou atualize se necessário
 }
 
 define('DB_CHARSET',        'utf8mb4');
