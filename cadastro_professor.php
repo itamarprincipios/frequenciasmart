@@ -7,7 +7,7 @@ require_once __DIR__ . '/helpers.php';
 iniciar_sessao();
 
 // Se já estiver logado, vai para o dashboard
-if (está_logado()) {
+if (usuario_logado()) {
     redirect('/dashboard');
 }
 
