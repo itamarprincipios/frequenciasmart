@@ -12,6 +12,9 @@
         }
     ],
     "config": {
-        "secure-http": false
+        "secure-http": false,
+        "audit": {
+            "block-insecure": false
+        }
     }
 }
