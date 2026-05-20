@@ -192,8 +192,8 @@ include __DIR__ . '/../layout/header.php';
 <?php else: ?>
                     <td><strong><?= e($d->turma_nome ?? '—') ?></strong></td>
                     <td style="text-align:center"><span class="badge badge-blue"><?= e($d->turno ?? '—') ?></span></td>
-                    <td style="text-align:center"><strong style="color:var(--success)"><?= e($d->total_presencas) ?></strong></td>
                     <td style="text-align:center"><strong style="color:var(--danger)"><?= e($d->total_faltas) ?></strong></td>
+                    <td style="text-align:center"><strong style="color:var(--success)"><?= e($d->total_presencas) ?></strong></td>
                     <td style="text-align:center">
                         <a href="/frequencias?turma_id=<?= $d->turma_id ?>&data=<?= $data ?>&turno=<?= $turno ?>" class="btn btn-outline" style="padding:.3rem .8rem; font-size:.7rem">🔍 Detalhes</a>
                     </td>
