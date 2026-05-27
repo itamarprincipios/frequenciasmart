@@ -31,30 +31,6 @@ $justificativas = db_all(
     $params
 );
 
-$turmas = db_all("SELECT * FROM turmas WHERE school_id_placeholder_or_escola_id = ? AND ativa = 1 ORDER BY nome", [escola_id()]);
-// Wait! Let's check in the database if table turmas has escola_id. In banco.sql:
-// CREATE TABLE IF NOT EXISTS `turmas` (
-//    `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-//    ...
-// But wait! Is there school_id or escola_id? Let's check banco.sql or config/helpers/db.php.
-// In banco.sql, `turmas` doesn't have `escola_id`? Let's double check banco.sql:
-// In banco.sql:
-// CREATE TABLE IF NOT EXISTS `turmas` (
-//     `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-//     `nome`        VARCHAR(100) NOT NULL,
-//     `turno`       ENUM('MANHA','TARDE','NOITE') NOT NULL DEFAULT 'MANHA',
-//     `ano_letivo`  YEAR NOT NULL DEFAULT (YEAR(CURDATE())),
-//     `ativa`       TINYINT(1) NOT NULL DEFAULT 1,
-//     `qr_token`    VARCHAR(64) NOT NULL,
-//     `created_at`  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//     `updated_at`  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-// But wait, does it have `escola_id`? Wait! Let's check db.php or schools/turmas logic, or pages/frequencias.php.
-// In pages/frequencias.php:
-// $sqlTurmas = "SELECT * FROM turmas WHERE escola_id = ? AND ativa = 1";
-// So yes, `turmas` has `escola_id`! Ah, the banco.sql might be slightly older or have columns missing in the printed creation, but wait, the query in pages/frequencias.php uses `escola_id = ?`.
-// Let's use `escola_id = ?`.
-
 $turmas = db_all("SELECT * FROM turmas WHERE escola_id = ? AND ativa = 1 ORDER BY nome", [escola_id()]);
 
 $tituloPagina = 'Justificativas de Faltas';
