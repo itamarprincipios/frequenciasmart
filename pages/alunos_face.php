@@ -40,7 +40,7 @@ include __DIR__ . '/../layout/header.php';
 
             <div id="camContainer" style="display: none; position: relative; width: 100%; max-width: 480px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
                 <video id="webcam" autoplay muted playsinline style="width: 100%; display: block; background: #000; transform: scaleX(-1);"></video>
-                <canvas id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transform: scaleX(-1);"></canvas>
+                <canvas id="faceOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transform: scaleX(-1);"></canvas>
                 
                 <div id="scanStatus" style="position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.85); color: #fff; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.8rem; pointer-events: none; white-space: nowrap;">
                     Aguardando detecção de rosto...
@@ -84,7 +84,7 @@ include __DIR__ . '/../layout/header.php';
 
 <script>
 const video = document.getElementById('webcam');
-const overlayCanvas = document.getElementById('overlay');
+const overlayCanvas = document.getElementById('faceOverlay'); // ID único: evita colisão com o #overlay do menu (header.php)
 const ctx = overlayCanvas.getContext('2d'); // Obtém o contexto 2D uma única vez
 const loader = document.getElementById('loaderModels');
 const container = document.getElementById('camContainer');
