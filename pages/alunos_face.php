@@ -79,8 +79,8 @@ include __DIR__ . '/../layout/header.php';
 }
 </style>
 
-<!-- Importa face-api.js -->
-<script src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<!-- Importa face-api.js (hospedado localmente, sem depender de CDN externa) -->
+<script src="/assets/face-api/face-api.min.js"></script>
 
 <script>
 const video = document.getElementById('webcam');
@@ -97,8 +97,8 @@ let localStream = null;
 let currentDescriptor = null;
 let detectionInterval = null;
 
-// URL base para carregar os pesos/modelos
-const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models/';
+// URL base para carregar os pesos/modelos (hospedados localmente no servidor)
+const MODEL_URL = '/assets/face-api/models';
 
 // Função para registrar erros visualmente na tela
 function logDebug(msg) {
@@ -117,15 +117,23 @@ window.onerror = function(message, source, lineno, colno, error) {
     return false;
 };
 
+// Evita que o carregamento fique pendente para sempre caso a rede trave sem erro nem resposta
+function withTimeout(promise, ms, label) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error(`Tempo esgotado (${ms / 1000}s) ao carregar ${label}`)), ms))
+    ]);
+}
+
 async function init() {
     try {
         logDebug("Iniciando carregamento dos modelos de IA...");
         // Carrega os 3 modelos necessários para detecção ultra-leve (TINY), landmarks e reconhecimento
-        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        await withTimeout(faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL), 15000, 'Detector');
         logDebug("Modelo Detector carregado.");
-        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+        await withTimeout(faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL), 15000, 'Landmarks');
         logDebug("Modelo Landmarks carregado.");
-        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+        await withTimeout(faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL), 15000, 'Recognition');
         logDebug("Modelo Recognition carregado.");
 
         // Oculta loader e exibe câmera
@@ -135,6 +143,12 @@ async function init() {
         startWebcam();
     } catch (err) {
         logDebug('Falha no init(): ' + err.message);
+        loader.innerHTML = `
+            <div style="font-size: 2.5rem;">⚠️</div>
+            <h4 style="margin-top: 1rem; color: #b91c1c;">Falha ao carregar modelos de IA</h4>
+            <p style="font-size: 0.85rem; color: #94a3b8;">${err.message}</p>
+            <button class="btn btn-outline" style="margin-top:1rem" onclick="location.reload()">🔄 Tentar Novamente</button>
+        `;
     }
 }
 

@@ -322,8 +322,8 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
         </div>
     </main>
 
-    <!-- Importa face-api.js -->
-    <script src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <!-- Importa face-api.js (hospedado localmente, sem depender de CDN externa) -->
+    <script src="/assets/face-api/face-api.min.js"></script>
 
     <script>
         // Dados dos alunos convertidos para formato Float32Array para comparação rápida
@@ -349,7 +349,7 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
         const confirmHora = document.getElementById('confirmHora');
         const confirmAvatar = document.getElementById('confirmAvatar');
 
-        const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models/';
+        const MODEL_URL = '/assets/face-api/models';
         let faceMatcher = null;
         let localStream = null;
         let isProcessing = false;
@@ -371,13 +371,21 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
         setInterval(updateClock, 1000);
         updateClock();
 
+        // Evita que o carregamento fique pendente para sempre caso a rede trave sem erro nem resposta
+        function withTimeout(promise, ms, label) {
+            return Promise.race([
+                promise,
+                new Promise((_, reject) => setTimeout(() => reject(new Error(`Tempo esgotado (${ms / 1000}s) ao carregar ${label}`)), ms))
+            ]);
+        }
+
         // Inicializar Modelos e Banco Local de Faces
         async function init() {
             try {
                 // Carrega pesos dos modelos (TINY)
-                await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-                await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-                await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+                await withTimeout(faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL), 15000, 'Detector');
+                await withTimeout(faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL), 15000, 'Landmarks');
+                await withTimeout(faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL), 15000, 'Recognition');
 
                 // Cria o matcher se houver alunos
                 if (alunos.length > 0) {
@@ -396,7 +404,12 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
                 startWebcam();
             } catch (err) {
                 console.error(err);
-                alert('Erro de carregamento do sistema. Verifique a internet do Totem.');
+                loadingScreen.innerHTML = `
+                    <div style="font-size: 3rem;">⚠️</div>
+                    <h2 style="margin-top: 1.5rem; font-weight: 800; color: #ef4444;">Falha ao carregar modelos de IA</h2>
+                    <p style="color: var(--text-sub); font-size: 0.9rem; margin-top: 0.5rem;">${err.message}</p>
+                    <button class="btn-voltar" style="margin-top:1.5rem" onclick="location.reload()">🔄 Tentar Novamente</button>
+                `;
             }
         }
 
