@@ -24,7 +24,7 @@ include __DIR__ . '/../layout/header.php';
 <div style="max-width: 680px; margin: 0 auto;">
     <div class="table-wrap">
         <div class="table-head">
-            <h3>📸 Mapeamento Facial — <?= e($aluno->nome) ?></h3>
+            <h3>📸 Mapeamento Facial - FACEID — <?= e($aluno->nome) ?></h3>
             <a href="/alunos" class="btn btn-outline" style="font-size:.8rem">← Voltar</a>
         </div>
         <div style="padding: 1.5rem;">
