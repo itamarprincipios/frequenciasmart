@@ -107,3 +107,48 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- Para gerar um novo hash, use este código PHP:
 --   <?php echo password_hash('sua_nova_senha', PASSWORD_BCRYPT); ?>
 -- ============================================================
+
+-- ============================================================
+-- ATUALIZAÇÃO: NOVOS MÓDULOS (JUSTIFICATIVAS E INDISCIPLINA)
+-- Executar os comandos abaixo no seu banco de dados (Hostinger phpMyAdmin)
+-- ============================================================
+
+-- 1. Alterar enum da tabela de frequências para suportar justificativas
+ALTER TABLE `frequencias` MODIFY `status` ENUM('PRESENTE','FALTA','FALTA_JUSTIFICADA') NOT NULL;
+
+-- 2. Tabela de justificativas de faltas
+CREATE TABLE IF NOT EXISTS `justificativas_faltas` (
+    `id`               INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `frequencia_id`    INT UNSIGNED NOT NULL,
+    `aluno_id`         INT UNSIGNED NOT NULL,
+    `escola_id`        INT UNSIGNED NOT NULL,
+    `responsavel_nome` VARCHAR(255) NOT NULL,
+    `parentesco`       ENUM('PAI','MAE','AVO','AVIA','TIO','TIA','OUTRO') NOT NULL,
+    `data_visita`      DATE NOT NULL,
+    `motivo`           TEXT NOT NULL,
+    `observacoes`      TEXT NULL,
+    `registrado_por`   INT UNSIGNED NULL,
+    `created_at`       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`frequencia_id`) REFERENCES `frequencias`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`aluno_id`)      REFERENCES `alunos`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`registrado_por`) REFERENCES `users`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 3. Tabela de ocorrências disciplinares (Indisciplina)
+CREATE TABLE IF NOT EXISTS `ocorrencias_disciplinares` (
+    `id`               INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `escola_id`        INT UNSIGNED NOT NULL,
+    `aluno_id`         INT UNSIGNED NOT NULL,
+    `turma_id`         INT UNSIGNED NOT NULL,
+    `tipo`             ENUM('INDISCIPLINA_PROFESSOR','RECUSA_ATIVIDADE','BRIGA','FURTO','OUTRO') NOT NULL,
+    `data_ocorrencia`  DATE NOT NULL,
+    `descricao`        TEXT NOT NULL,
+    `medida_tomada`    TEXT NULL,
+    `registrado_por`   INT UNSIGNED NULL,
+    `created_at`       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`aluno_id`)       REFERENCES `alunos`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`turma_id`)       REFERENCES `turmas`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`registrado_por`) REFERENCES `users`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+

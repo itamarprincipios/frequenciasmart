@@ -156,5 +156,46 @@ if ($rota === 'presenca-mec') { requer_role('DIRETOR', 'VICE'); require __DIR__ 
 if ($rota === 'presenca-mec/imprimir') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/presenca_mec_imprimir.php'; exit; }
 if ($rota === 'migrar-conformidade') { require __DIR__ . '/migrar_conformidade.php'; exit; }
 
+// --- NOVAS ROTAS: JUSTIFICATIVAS DE FALTAS ---
+if ($rota === 'justificativas') {
+    requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
+    if ($metodo === 'POST') { require __DIR__ . '/actions/justificativa_store.php'; }
+    else { require __DIR__ . '/pages/justificativas.php'; }
+    exit;
+}
+if ($rota === 'justificativas/criar') {
+    requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
+    require __DIR__ . '/pages/justificativa_form.php';
+    exit;
+}
+if (count($partes) === 3 && $partes[0] === 'justificativas' && is_numeric($partes[1])) {
+    requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
+    $id = (int)$partes[1];
+    $acao = $partes[2];
+    if ($acao === 'imprimir') { require __DIR__ . '/pages/justificativa_imprimir.php'; exit; }
+    if ($acao === 'excluir' && $metodo === 'POST') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/actions/justificativa_destroy.php'; exit; }
+}
+
+// --- NOVAS ROTAS: OCORRÊNCIAS DISCIPLINARES ---
+if ($rota === 'ocorrencias') {
+    requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
+    if ($metodo === 'POST') { require __DIR__ . '/actions/ocorrencias_store.php'; }
+    else { require __DIR__ . '/pages/ocorrencias.php'; }
+    exit;
+}
+if ($rota === 'ocorrencias/criar') {
+    requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
+    require __DIR__ . '/pages/ocorrencias_form.php';
+    exit;
+}
+if (count($partes) === 3 && $partes[0] === 'ocorrencias' && is_numeric($partes[1])) {
+    requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
+    $id = (int)$partes[1];
+    $acao = $partes[2];
+    if ($acao === 'imprimir') { require __DIR__ . '/pages/ocorrencias_imprimir.php'; exit; }
+    if ($acao === 'excluir' && $metodo === 'POST') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/actions/ocorrencias_destroy.php'; exit; }
+}
+
 http_response_code(404);
 echo "404 - Pagina nao encontrada";
+

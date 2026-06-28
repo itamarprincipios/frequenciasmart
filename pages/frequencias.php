@@ -13,13 +13,14 @@ if ($modoAcumulado) {
     $dados = db_all(
         "SELECT a.id, a.nome as aluno_nome, 
                 (SELECT f.status FROM frequencias f WHERE f.aluno_id = a.id AND f.data = ?) as status_hoje,
+                (SELECT f.id FROM frequencias f WHERE f.aluno_id = a.id AND f.data = ?) as frequencia_id_hoje,
                 (SELECT COUNT(*) FROM frequencias f WHERE f.aluno_id = a.id AND f.status = 'FALTA' AND f.data <= ?) as total_faltas
          FROM alunos a
          JOIN turmas t ON t.id = a.turma_id
          WHERE a.turma_id = ? AND a.ativo = 1
          AND (t.turno = ? OR ? IS NULL)
          ORDER BY a.nome",
-        [$data, $data, $turmaId, $turno, $turno]
+        [$data, $data, $data, $turmaId, $turno, $turno]
     );
     
     $totalGeral = count($dados);
@@ -156,6 +157,8 @@ include __DIR__ . '/../layout/header.php';
                             <span class="badge badge-green">Presente</span>
                         <?php elseif ($d->status_hoje === 'FALTA'): ?>
                             <span class="badge badge-red">Falta</span>
+                        <?php elseif ($d->status_hoje === 'FALTA_JUSTIFICADA'): ?>
+                            <span class="badge badge-blue" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd">Justificada</span>
                         <?php else: ?>
                             <span class="badge badge-gray">Não Lançado</span>
                         <?php endif; ?>
@@ -188,12 +191,15 @@ include __DIR__ . '/../layout/header.php';
                                 <button type="submit" class="btn btn-outline" style="padding:.2rem .5rem; font-size:.65rem; color:var(--success)">✓ Dar Presença</button>
                             <?php endif; ?>
                         </form>
+                        <?php if ($d->status_hoje === 'FALTA' && !empty($d->frequencia_id_hoje)): ?>
+                            <a href="/justificativas/criar?frequencia_id=<?= $d->frequencia_id_hoje ?>" class="btn btn-outline" style="padding:.2rem .5rem; font-size:.65rem; color:var(--primary); margin-left:.25rem">📝 Justificar</a>
+                        <?php endif; ?>
                     </td>
 <?php else: ?>
                     <td><strong><?= e($d->turma_nome ?? '—') ?></strong></td>
                     <td style="text-align:center"><span class="badge badge-blue"><?= e($d->turno ?? '—') ?></span></td>
-                    <td style="text-align:center"><strong style="color:var(--success)"><?= e($d->total_presencas) ?></strong></td>
                     <td style="text-align:center"><strong style="color:var(--danger)"><?= e($d->total_faltas) ?></strong></td>
+                    <td style="text-align:center"><strong style="color:var(--success)"><?= e($d->total_presencas) ?></strong></td>
                     <td style="text-align:center">
                         <a href="/frequencias?turma_id=<?= $d->turma_id ?>&data=<?= $data ?>&turno=<?= $turno ?>" class="btn btn-outline" style="padding:.3rem .8rem; font-size:.7rem">🔍 Detalhes</a>
                     </td>
