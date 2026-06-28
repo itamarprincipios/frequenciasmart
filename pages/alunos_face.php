@@ -95,8 +95,8 @@ const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models/';
 
 async function init() {
     try {
-        // Carrega os 3 modelos necessários para detecção, landmarks e reconhecimento
-        await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+        // Carrega os 3 modelos necessários para detecção ultra-leve (TINY), landmarks e reconhecimento
+        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
         await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
         await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
 
@@ -112,6 +112,9 @@ async function init() {
 }
 
 function startWebcam() {
+    // Registra o listener ANTES de abrir a webcam para evitar race conditions
+    video.addEventListener('play', onPlay);
+
     navigator.mediaDevices.getUserMedia({ 
         video: { 
             width: { ideal: 640 }, 
@@ -122,7 +125,10 @@ function startWebcam() {
     .then(stream => {
         video.srcObject = stream;
         localStream = stream;
-        video.addEventListener('play', onPlay);
+        // Se a câmera já começou a reproduzir antes do listener disparar
+        if (video.readyState >= 2) {
+            onPlay();
+        }
     })
     .catch(err => {
         console.error(err);
@@ -131,11 +137,24 @@ function startWebcam() {
 }
 
 function onPlay() {
-    const displaySize = { width: video.videoWidth, height: video.videoHeight };
-    faceapi.matchDimensions(canvas, displaySize);
+    if (detectionInterval) clearInterval(detectionInterval);
+
+    let displaySize = { width: video.videoWidth, height: video.videoHeight };
+    if (displaySize.width > 0 && displaySize.height > 0) {
+        faceapi.matchDimensions(canvas, displaySize);
+    }
 
     detectionInterval = setInterval(async () => {
-        const detection = await faceapi.detectSingleFace(video)
+        // Redimensiona o canvas caso as dimensões tenham carregado após a inicialização
+        if (video.videoWidth > 0 && (displaySize.width !== video.videoWidth || displaySize.height !== video.videoHeight)) {
+            displaySize = { width: video.videoWidth, height: video.videoHeight };
+            faceapi.matchDimensions(canvas, displaySize);
+        }
+
+        if (displaySize.width === 0 || displaySize.height === 0) return;
+
+        // Usa TinyFaceDetector para rodar de forma ultra-rápida mesmo em celulares ou PCs antigos
+        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
             .withFaceLandmarks()
             .withFaceDescriptor();
 

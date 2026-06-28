@@ -354,6 +354,7 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
         let isProcessing = false;
         let lastScannedId = null;
         let clearScanTimeout = null;
+        let detectionInterval = null;
 
         // Atualizar Relógio do Totem
         function updateClock() {
@@ -372,8 +373,8 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
         // Inicializar Modelos e Banco Local de Faces
         async function init() {
             try {
-                // Carrega pesos dos modelos
-                await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+                // Carrega pesos dos modelos (TINY)
+                await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
                 await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
                 await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
 
@@ -400,6 +401,9 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
 
         // Iniciar WebCam
         function startWebcam() {
+            // Registra o listener ANTES de abrir a webcam para evitar race conditions
+            video.addEventListener('play', onPlay);
+
             navigator.mediaDevices.getUserMedia({
                 video: {
                     width: { ideal: 640 },
@@ -410,7 +414,10 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
             .then(stream => {
                 video.srcObject = stream;
                 localStream = stream;
-                video.addEventListener('play', onPlay);
+                // Se a câmera já começou a reproduzir antes do listener disparar
+                if (video.readyState >= 2) {
+                    onPlay();
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -421,16 +428,29 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
 
         // Loop de reconhecimento facial contínuo
         function onPlay() {
-            const displaySize = { width: video.videoWidth, height: video.videoHeight };
-            faceapi.matchDimensions(canvas, displaySize);
+            if (detectionInterval) clearInterval(detectionInterval);
+
+            let displaySize = { width: video.videoWidth, height: video.videoHeight };
+            if (displaySize.width > 0 && displaySize.height > 0) {
+                faceapi.matchDimensions(canvas, displaySize);
+            }
 
             statusBadge.querySelector('span').textContent = 'Aproxime-se para registrar';
             statusBadge.querySelector('.pulse-dot').style.backgroundColor = 'var(--success)';
 
-            setInterval(async () => {
+            detectionInterval = setInterval(async () => {
                 if (isProcessing) return;
 
-                const detection = await faceapi.detectSingleFace(video)
+                // Redimensiona o canvas caso as dimensões tenham carregado após a inicialização
+                if (video.videoWidth > 0 && (displaySize.width !== video.videoWidth || displaySize.height !== video.videoHeight)) {
+                    displaySize = { width: video.videoWidth, height: video.videoHeight };
+                    faceapi.matchDimensions(canvas, displaySize);
+                }
+
+                if (displaySize.width === 0 || displaySize.height === 0) return;
+
+                // Usa TinyFaceDetector para rodar de forma ultra-rápida mesmo em dispositivos móveis
+                const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
                     .withFaceLandmarks()
                     .withFaceDescriptor();
 
