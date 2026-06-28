@@ -148,10 +148,16 @@ if (count($partes) === 3 && $partes[0] === 'alunos' && is_numeric($partes[1])) {
     if ($acao === 'editar') { require __DIR__ . '/pages/alunos_form.php'; exit; }
     if ($acao === 'excluir' && $metodo === 'POST') { requer_role('DIRETOR'); require __DIR__ . '/actions/alunos_destroy.php'; exit; }
     if ($acao === 'qrcode') { require __DIR__ . '/pages/alunos_qrcode.php'; exit; }
+    if ($acao === 'face') {
+        if ($metodo === 'POST') { require __DIR__ . '/actions/alunos_save_face.php'; exit; }
+        else { require __DIR__ . '/pages/alunos_face.php'; exit; }
+    }
 }
 
 if ($rota === 'relatorios') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/relatorios.php'; exit; }
 if ($rota === 'relatorios/imprimir') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/relatorio_imprimir.php'; exit; }
+if ($rota === 'totem') { requer_role('DIRETOR', 'VICE', 'ORIENTADORA', 'ASSISTENTE'); require __DIR__ . '/pages/totem.php'; exit; }
+if ($rota === 'api/totem/registrar' && $metodo === 'POST') { require __DIR__ . '/actions/totem_registrar.php'; exit; }
 if ($rota === 'presenca-mec') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/presenca_mec.php'; exit; }
 if ($rota === 'presenca-mec/imprimir') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/presenca_mec_imprimir.php'; exit; }
 if ($rota === 'migrar-conformidade') { require __DIR__ . '/migrar_conformidade.php'; exit; }

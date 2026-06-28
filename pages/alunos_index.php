@@ -100,6 +100,17 @@ include __DIR__ . '/../layout/header.php';
                            class="btn btn-outline" style="font-size:.7rem;padding:.3rem .5rem" title="Imprimir QR Code">
                             📱 QR
                         </a>
+                        <?php if (!empty($aluno->face_descriptor)): ?>
+                            <a href="/alunos/<?= e($aluno->id) ?>/face"
+                               class="btn btn-outline" style="font-size:.7rem;padding:.3rem .5rem;border-color:#10b981;color:#10b981" title="Biometria Facial (Cadastrada)">
+                                🟢 Face
+                            </a>
+                        <?php else: ?>
+                            <a href="/alunos/<?= e($aluno->id) ?>/face"
+                               class="btn btn-outline" style="font-size:.7rem;padding:.3rem .5rem;color:#64748b" title="Cadastrar Face">
+                                📸 Face
+                            </a>
+                        <?php endif; ?>
                         <a href="/alunos/<?= e($aluno->id) ?>/editar"
                            class="btn btn-primary" style="font-size:.7rem;padding:.3rem .5rem" title="Editar aluno">
                             ✏️ Editar
