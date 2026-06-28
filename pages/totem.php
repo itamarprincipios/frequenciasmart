@@ -560,7 +560,13 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
             }
         }
 
-        window.onload = init;
+        // NÃO usar window.onload: ele aguarda TODOS os recursos (incl. fontes/CDN externas),
+        // que podem travar em redes que bloqueiam CDNs. O face-api.min.js local já carregou acima.
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 </html>

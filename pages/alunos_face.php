@@ -276,8 +276,15 @@ btnCapture.addEventListener('click', () => {
     });
 });
 
-// Inicializa a carga dos modelos
-window.onload = init;
+// Inicializa a carga dos modelos.
+// NÃO usar window.onload: ele só dispara quando TODOS os recursos da página carregam,
+// e o Chart.js da CDN externa (no header) trava em redes que bloqueiam CDNs, prendendo o onload.
+// O face-api.min.js já foi carregado pelo <script> local acima, então init() pode rodar direto.
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
 </script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>
