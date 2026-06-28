@@ -62,6 +62,12 @@ include __DIR__ . '/../layout/header.php';
                 <p style="font-size: 0.85rem; color: #15803d; margin-bottom: 1.5rem;">A assinatura facial foi salva no banco de dados. O aluno já pode usar o Totem.</p>
                 <a href="/alunos" class="btn btn-primary" style="display: inline-block;">Ir para Alunos</a>
             </div>
+
+            <!-- CONSOLE DE DEBUG VISUAL -->
+            <div id="consoleLog" style="margin-top: 1.5rem; background: #fff1f2; border: 1px solid #fda4af; border-radius: 8px; padding: 1rem; color: #9f1239; font-family: monospace; font-size: 0.8rem; display: none;">
+                <h5 style="margin-bottom: 0.5rem; font-weight: bold; display: flex; align-items: center; gap: 6px;">🔴 Log de Depuração (Debug Console):</h5>
+                <ul id="logList" style="margin: 0; padding-left: 1.25rem;"></ul>
+            </div>
         </div>
     </div>
 </div>
@@ -93,12 +99,33 @@ let detectionInterval = null;
 // URL base para carregar os pesos/modelos
 const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models/';
 
+// Função para registrar erros visualmente na tela
+function logDebug(msg) {
+    console.log(msg);
+    const consoleLog = document.getElementById('consoleLog');
+    const logList = document.getElementById('logList');
+    consoleLog.style.display = 'block';
+    const li = document.createElement('li');
+    li.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    logList.appendChild(li);
+}
+
+// Captura erros globais
+window.onerror = function(message, source, lineno, colno, error) {
+    logDebug(`Erro Global: ${message} na linha ${lineno}`);
+    return false;
+};
+
 async function init() {
     try {
+        logDebug("Iniciando carregamento dos modelos de IA...");
         // Carrega os 3 modelos necessários para detecção ultra-leve (TINY), landmarks e reconhecimento
         await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        logDebug("Modelo Detector carregado.");
         await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+        logDebug("Modelo Landmarks carregado.");
         await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+        logDebug("Modelo Recognition carregado.");
 
         // Oculta loader e exibe câmera
         loader.style.display = 'none';
@@ -106,13 +133,12 @@ async function init() {
 
         startWebcam();
     } catch (err) {
-        console.error(err);
-        alert('Erro ao inicializar modelos de inteligência artificial. Verifique sua conexão com a internet.');
+        logDebug('Falha no init(): ' + err.message);
     }
 }
 
 function startWebcam() {
-    // Registra o listener ANTES de abrir a webcam para evitar race conditions
+    logDebug("Requisitando acesso à câmera...");
     video.addEventListener('play', onPlay);
 
     navigator.mediaDevices.getUserMedia({ 
@@ -123,58 +149,61 @@ function startWebcam() {
         } 
     })
     .then(stream => {
+        logDebug("Acesso à câmera concedido.");
         video.srcObject = stream;
         localStream = stream;
-        // Se a câmera já começou a reproduzir antes do listener disparar
         if (video.readyState >= 2) {
             onPlay();
         }
     })
     .catch(err => {
-        console.error(err);
+        logDebug('Falha ao abrir webcam: ' + err.message);
         alert('Câmera não encontrada ou acesso negado.');
     });
 }
 
 function onPlay() {
+    logDebug("Inicializando loop de detecção facial...");
     if (detectionInterval) clearInterval(detectionInterval);
 
     let displaySize = { width: video.videoWidth, height: video.videoHeight };
+    logDebug(`Dimensões iniciais do vídeo: ${displaySize.width}x${displaySize.height}`);
     if (displaySize.width > 0 && displaySize.height > 0) {
         faceapi.matchDimensions(canvas, displaySize);
     }
 
     detectionInterval = setInterval(async () => {
-        // Redimensiona o canvas caso as dimensões tenham carregado após a inicialização
-        if (video.videoWidth > 0 && (displaySize.width !== video.videoWidth || displaySize.height !== video.videoHeight)) {
-            displaySize = { width: video.videoWidth, height: video.videoHeight };
-            faceapi.matchDimensions(canvas, displaySize);
+        try {
+            if (video.videoWidth > 0 && (displaySize.width !== video.videoWidth || displaySize.height !== video.videoHeight)) {
+                displaySize = { width: video.videoWidth, height: video.videoHeight };
+                faceapi.matchDimensions(canvas, displaySize);
+                logDebug(`Dimensões do vídeo atualizadas: ${displaySize.width}x${displaySize.height}`);
+            }
+
+            if (displaySize.width === 0 || displaySize.height === 0) return;
+
+            const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+                .withFaceLandmarks()
+                .withFaceDescriptor();
+
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+
+            if (detection) {
+                const resizedDetections = faceapi.resizeResults(detection, displaySize);
+                faceapi.draw.drawDetections(canvas, resizedDetections);
+                
+                statusText.innerHTML = '🟢 <strong style="color:#10b981">Rosto Detectado!</strong> Mantenha a posição.';
+                actionButtons.style.display = 'flex';
+                currentDescriptor = detection.descriptor;
+            } else {
+                statusText.innerHTML = 'Aguardando detecção de rosto...';
+                currentDescriptor = null;
+            }
+        } catch (err) {
+            logDebug('Erro no loop de detecção: ' + err.message);
+            clearInterval(detectionInterval);
         }
-
-        if (displaySize.width === 0 || displaySize.height === 0) return;
-
-        // Usa TinyFaceDetector para rodar de forma ultra-rápida mesmo em celulares ou PCs antigos
-        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-            .withFaceLandmarks()
-            .withFaceDescriptor();
-
-        // Limpa canvas
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-
-        if (detection) {
-            const resizedDetections = faceapi.resizeResults(detection, displaySize);
-            // Desenha caixa do rosto
-            faceapi.draw.drawDetections(canvas, resizedDetections);
-            
-            // Verifica o tamanho da detecção
-            statusText.innerHTML = '🟢 <strong style="color:#10b981">Rosto Detectado!</strong> Mantenha a posição.';
-            actionButtons.style.display = 'flex';
-            currentDescriptor = detection.descriptor;
-        } else {
-            statusText.innerHTML = 'Aguardando detecção de rosto...';
-            currentDescriptor = null;
-        }
-    }, 150);
+    }, 200);
 }
 
 function restartCapture() {
