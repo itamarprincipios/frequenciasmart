@@ -84,7 +84,8 @@ include __DIR__ . '/../layout/header.php';
 
 <script>
 const video = document.getElementById('webcam');
-const canvas = document.getElementById('overlay');
+const overlayCanvas = document.getElementById('overlay');
+const ctx = overlayCanvas.getContext('2d'); // Obtém o contexto 2D uma única vez
 const loader = document.getElementById('loaderModels');
 const container = document.getElementById('camContainer');
 const statusText = document.getElementById('scanStatus');
@@ -169,14 +170,16 @@ function onPlay() {
     let displaySize = { width: video.videoWidth, height: video.videoHeight };
     logDebug(`Dimensões iniciais do vídeo: ${displaySize.width}x${displaySize.height}`);
     if (displaySize.width > 0 && displaySize.height > 0) {
-        faceapi.matchDimensions(canvas, displaySize);
+        overlayCanvas.width = displaySize.width;
+        overlayCanvas.height = displaySize.height;
     }
 
     detectionInterval = setInterval(async () => {
         try {
             if (video.videoWidth > 0 && (displaySize.width !== video.videoWidth || displaySize.height !== video.videoHeight)) {
                 displaySize = { width: video.videoWidth, height: video.videoHeight };
-                faceapi.matchDimensions(canvas, displaySize);
+                overlayCanvas.width = displaySize.width;
+                overlayCanvas.height = displaySize.height;
                 logDebug(`Dimensões do vídeo atualizadas: ${displaySize.width}x${displaySize.height}`);
             }
 
@@ -186,11 +189,13 @@ function onPlay() {
                 .withFaceLandmarks()
                 .withFaceDescriptor();
 
-            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            // Limpa canvas usando o contexto pré-adquirido
+            ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
             if (detection) {
                 const resizedDetections = faceapi.resizeResults(detection, displaySize);
-                faceapi.draw.drawDetections(canvas, resizedDetections);
+                // Desenha caixa do rosto no canvas
+                faceapi.draw.drawDetections(overlayCanvas, resizedDetections);
                 
                 statusText.innerHTML = '🟢 <strong style="color:#10b981">Rosto Detectado!</strong> Mantenha a posição.';
                 actionButtons.style.display = 'flex';

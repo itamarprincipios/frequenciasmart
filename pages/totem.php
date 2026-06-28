@@ -339,7 +339,8 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
         ];
 
         const video = document.getElementById('webcam');
-        const canvas = document.getElementById('overlay');
+        const overlayCanvas = document.getElementById('overlay');
+        const ctx = overlayCanvas.getContext('2d'); // Obtém o contexto uma única vez
         const loadingScreen = document.getElementById('loadingScreen');
         const statusBadge = document.getElementById('totemStatus');
         const confirmCard = document.getElementById('confirmCard');
@@ -432,7 +433,8 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
 
             let displaySize = { width: video.videoWidth, height: video.videoHeight };
             if (displaySize.width > 0 && displaySize.height > 0) {
-                faceapi.matchDimensions(canvas, displaySize);
+                overlayCanvas.width = displaySize.width;
+                overlayCanvas.height = displaySize.height;
             }
 
             statusBadge.querySelector('span').textContent = 'Aproxime-se para registrar';
@@ -444,7 +446,8 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
                 // Redimensiona o canvas caso as dimensões tenham carregado após a inicialização
                 if (video.videoWidth > 0 && (displaySize.width !== video.videoWidth || displaySize.height !== video.videoHeight)) {
                     displaySize = { width: video.videoWidth, height: video.videoHeight };
-                    faceapi.matchDimensions(canvas, displaySize);
+                    overlayCanvas.width = displaySize.width;
+                    overlayCanvas.height = displaySize.height;
                 }
 
                 if (displaySize.width === 0 || displaySize.height === 0) return;
@@ -454,13 +457,13 @@ $tituloPagina = "Totem de Reconhecimento Facial — " . ($escola->nome ?? 'Escol
                     .withFaceLandmarks()
                     .withFaceDescriptor();
 
-                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
                 if (detection && faceMatcher) {
                     const resizedDetection = faceapi.resizeResults(detection, displaySize);
                     
                     // Desenha marcação no canvas
-                    faceapi.draw.drawDetections(canvas, resizedDetection);
+                    faceapi.draw.drawDetections(overlayCanvas, resizedDetection);
 
                     // Realiza a comparação do rosto
                     const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
