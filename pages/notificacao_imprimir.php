@@ -8,11 +8,16 @@ if (!isset($id) || !is_numeric($id)) {
 }
 
 $alerta = db_one(
-    "SELECT al.*, a.nome AS aluno_nome, a.matricula, t.nome AS turma_nome, e.nome AS escola_nome
+    "SELECT al.*, 
+            a.nome AS aluno_nome, a.matricula, a.data_nascimento,
+            a.responsavel_nome, a.responsavel_cpf, a.responsavel_telefone,
+            t.nome AS turma_nome, e.nome AS escola_nome,
+            u.nome AS intervencao_usuario_nome
      FROM alertas al
      JOIN alunos a ON a.id = al.aluno_id
      LEFT JOIN turmas t ON t.id = a.turma_id
      JOIN escolas e ON e.id = al.escola_id
+     LEFT JOIN users u ON u.id = al.intervencao_usuario_id
      WHERE al.id = ? AND al.escola_id = ?",
     [(int)$id, escola_id()]
 );
@@ -100,9 +105,18 @@ $tituloPagina = "Notificação - " . $alerta->aluno_nome;
         <p>Prezados Responsáveis,</p>
         <p>Vimos por meio desta informar que o(a) aluno(a) abaixo identificado(a) apresenta um índice de faltas que requer atenção imediata, conforme os registros do sistema de frequência escolar desta unidade.</p>
 
-        <div class="dados-aluno">
-            <strong>Aluno(a):</strong> <?= e($alerta->aluno_nome) ?><br>
-            <strong>Turma:</strong> <?= e($alerta->turma_nome) ?><br>
+        <div class="dados-aluno" style="flex-direction:column;gap:4px">
+            <div><strong>Aluno(a):</strong> <?= e($alerta->aluno_nome) ?></div>
+            <div><strong>Matrícula:</strong> <?= e($alerta->matricula) ?></div>
+            <div><strong>Turma:</strong> <?= e($alerta->turma_nome) ?></div>
+            <?php if ($alerta->data_nascimento): ?>
+            <div><strong>Data de Nascimento:</strong> <?= date('d/m/Y', strtotime($alerta->data_nascimento)) ?></div>
+            <?php endif; ?>
+            <div style="margin-top:6px;border-top:1px dashed #ccc;padding-top:6px">
+                <strong>Responsável Legal:</strong> <?= e($alerta->responsavel_nome ?? 'Não informado') ?><br>
+                <?php if ($alerta->responsavel_cpf): ?><strong>CPF do Responsável:</strong> <?= e($alerta->responsavel_cpf) ?><br><?php endif; ?>
+                <?php if ($alerta->responsavel_telefone): ?><strong>Telefone:</strong> <?= e($alerta->responsavel_telefone) ?><?php endif; ?>
+            </div>
         </div>
 
         <p>
@@ -141,6 +155,25 @@ $tituloPagina = "Notificação - " . $alerta->aluno_nome;
         </div>
     </div>
 
+    <?php if (!empty($alerta->conselho_tutelar_protocolo) || !empty($alerta->conselho_tutelar_data)): ?>
+    <div style="background:#fff0f0;border:1px solid #fecaca;border-radius:6px;padding:10px;margin:15px 0;font-size:0.82rem">
+        <strong>📋 Encaminhamento ao Conselho Tutelar</strong><br>
+        <?php if ($alerta->conselho_tutelar_protocolo): ?>
+        <strong>Protocolo CT:</strong> <?= e($alerta->conselho_tutelar_protocolo) ?> &nbsp;
+        <?php endif; ?>
+        <?php if ($alerta->conselho_tutelar_data): ?>
+        <strong>Data:</strong> <?= date('d/m/Y', strtotime($alerta->conselho_tutelar_data)) ?>
+        <?php endif; ?>
+        <br><em style="font-size:.75rem">Conforme ECA, art. 56 e LDB, art. 12, VIII (Lei 13.803/2019)</em>
+    </div>
+    <?php endif; ?>
+
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px;font-size:.8rem;margin-bottom:15px">
+        <strong>Protocolo de Entrega:</strong>
+        Recebido em _____ / _____ / ________ &nbsp;&nbsp; Hora: _____:_____
+        &nbsp;&nbsp;&nbsp; Nº Protocolo: ___________________________
+    </div>
+
     <div class="assinaturas">
         <div class="assinatura-box">
             <strong>Professor(a) da Turma</strong><br>
@@ -151,7 +184,8 @@ $tituloPagina = "Notificação - " . $alerta->aluno_nome;
             <?= e($_SESSION['usuario']['nome'] ?? '') ?>
         </div>
         <div class="assinatura-box" style="grid-column: span 2; width: 60%; margin: 40px auto 0;">
-            <strong>Assinatura do Responsável</strong><br>
+            <strong>Assinatura do Responsável: <?= e($alerta->responsavel_nome ?? '') ?></strong><br>
+            <?php if ($alerta->responsavel_cpf): ?><span style="font-size:0.7rem">CPF: <?= e($alerta->responsavel_cpf) ?></span><br><?php endif; ?>
             <span style="font-size: 0.7rem;">Data: ____/____/<?= date('Y') ?></span>
         </div>
     </div>

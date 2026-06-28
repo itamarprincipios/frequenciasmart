@@ -63,6 +63,7 @@ if (count($partes) === 3 && $partes[0] === 'alertas' && is_numeric($partes[1])) 
     $id = (int)$partes[1];
     $acao = $partes[2];
     if ($acao === 'imprimir') { require __DIR__ . '/pages/notificacao_imprimir.php'; exit; }
+    if ($acao === 'intervencao' && $metodo === 'POST') { require __DIR__ . '/actions/alerta_intervencao.php'; exit; }
 }
 if (count($partes) === 3 && $partes[0] === 'turmas' && is_numeric($partes[1])) {
     requer_role('DIRETOR', 'VICE', 'ORIENTADORA');
@@ -151,6 +152,9 @@ if (count($partes) === 3 && $partes[0] === 'alunos' && is_numeric($partes[1])) {
 
 if ($rota === 'relatorios') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/relatorios.php'; exit; }
 if ($rota === 'relatorios/imprimir') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/relatorio_imprimir.php'; exit; }
+if ($rota === 'presenca-mec') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/presenca_mec.php'; exit; }
+if ($rota === 'presenca-mec/imprimir') { requer_role('DIRETOR', 'VICE'); require __DIR__ . '/pages/presenca_mec_imprimir.php'; exit; }
+if ($rota === 'migrar-conformidade') { require __DIR__ . '/migrar_conformidade.php'; exit; }
 
 http_response_code(404);
 echo "404 - Pagina nao encontrada";

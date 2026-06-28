@@ -30,9 +30,13 @@ $totalFaltasMes = db_one(
     $params
 )->total;
 
-// 4. Lista de Alunos Críticos (5+ faltas no mês)
+// 4. Lista de Alunos Críticos (com % de faltas)
+// 200 dias letivos anuais / 10 meses = 20 dias/mês. Alerta a partir de 5 faltas no mês (~25%)
+$DIAS_LETIVOS = 200;
+
 $alunosCriticos = db_all(
-    "SELECT a.nome, a.matricula, t.nome as turma_nome, COUNT(f.id) as total_faltas
+    "SELECT a.nome, a.matricula, a.responsavel_nome, a.responsavel_telefone,
+            t.nome as turma_nome, COUNT(f.id) as total_faltas
      FROM frequencias f
      JOIN alunos a ON a.id = f.aluno_id
      JOIN turmas t ON t.id = a.turma_id
@@ -42,6 +46,29 @@ $alunosCriticos = db_all(
      ORDER BY total_faltas DESC",
     $params
 );
+
+// Calcular faltas acumuladas no ano para alunos (para % LDB)
+$alunosAno = db_all(
+    "SELECT a.id, a.nome, a.matricula, a.responsavel_nome,
+            t.nome as turma_nome,
+            COUNT(CASE WHEN f.status = 'FALTA' THEN 1 END) as total_faltas_ano,
+            COUNT(CASE WHEN f.status = 'PRESENTE' THEN 1 END) as total_presencas_ano
+     FROM alunos a
+     JOIN turmas t ON t.id = a.turma_id AND t.ativa = 1
+     LEFT JOIN frequencias f ON f.aluno_id = a.id AND YEAR(f.data) = YEAR(CURDATE())
+     WHERE a.escola_id = ? AND a.ativo = 1
+     GROUP BY a.id
+     HAVING total_faltas_ano >= 40
+     ORDER BY total_faltas_ano DESC",
+    [$escolaId]
+);
+
+foreach ($alunosAno as &$a) {
+    $a->pct_faltas = round(($a->total_faltas_ano / $DIAS_LETIVOS) * 100, 1);
+    $a->notificar_ct = $a->pct_faltas >= 30; // LDB art. 12, VIII
+    $a->risco_pbf    = (($a->total_presencas_ano / $DIAS_LETIVOS) * 100) < 75; // Decreto 12.064/2024
+}
+unset($a);
 
 // 5. Resumo por Turma
 $resumoTurmas = db_all(
@@ -130,38 +157,86 @@ function fmt_mes_ano($mesAno) {
 
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-label">Total de Alunos (Ativos)</div>
-            <div class="stat-value"><?= e($totalAlunos) ?></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Total de Faltas no Mês</div>
-            <div class="stat-value" style="color: #ef4444;"><?= e($totalFaltasMes) ?></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Alertas Críticos (5+)</div>
-            <div class="stat-value"><?= count($alunosCriticos) ?></div>
-        </div>
+        <div class="stat-label">Total de Alunos (Ativos)</div>
+        <div class="stat-value"><?= e($totalAlunos) ?></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Total de Faltas no Mês</div>
+        <div class="stat-value" style="color: #ef4444;"><?= e($totalFaltasMes) ?></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Alertas Críticos (5+ faltas/mês)</div>
+        <div class="stat-value"><?= count($alunosCriticos) ?></div>
+    </div>
+    <div class="stat-card" style="border:2px solid #ef4444">
+        <div class="stat-label" style="color:#991b1b">Exigem Notif. CT (≥30% faltas/ano)</div>
+        <div class="stat-value" style="color:#ef4444"><?= count(array_filter($alunosAno, fn($a) => $a->notificar_ct)) ?></div>
+    </div>
     </div>
 
-    <div class="section-title">🚩 Alunos com Infrequência Crítica (5+ faltas no mês)</div>
+    <div class="section-title">🚩 Alunos com Infrequência no Mês (5+ faltas)</div>
     <table>
         <thead>
             <tr>
                 <th>Aluno(a)</th>
                 <th>Turma</th>
-                <th class="text-center">Total de Faltas</th>
+                <th class="text-center">Faltas no Mês</th>
+                <th>Responsável</th>
                 <th>Situação</th>
             </tr>
         </thead>
         <tbody>
             <?php if (empty($alunosCriticos)): ?>
-                <tr><td colspan="4" class="text-center" style="padding: 20px; color: #94a3b8;">Nenhum aluno atingiu o limite crítico de faltas neste mês.</td></tr>
+                <tr><td colspan="5" class="text-center" style="padding: 20px; color: #94a3b8;">Nenhum aluno atingiu o limite crítico de faltas neste mês.</td></tr>
             <?php else: foreach ($alunosCriticos as $a): ?>
                 <tr>
                     <td><strong><?= e($a->nome) ?></strong><br><small style="color:#64748b"><?= e($a->matricula) ?></small></td>
                     <td><?= e($a->turma_nome) ?></td>
                     <td class="text-center text-red"><?= e($a->total_faltas) ?></td>
-                    <td><span style="color:#b45309; font-weight: 500;">⚠️ Risco de Evasão</span></td>
+                    <td style="font-size:.8rem"><?= e($a->responsavel_nome ?? '—') ?><br><?= e($a->responsavel_telefone ?? '') ?></td>
+                    <td><span style="color:#b45309; font-weight: 500;">⚠️ Monitoramento</span></td>
+                </tr>
+            <?php endforeach; endif; ?>
+        </tbody>
+    </table>
+
+    <div class="section-title">🔴 Alunos em Risco Legal — ≥30% de Faltas no Ano (LDB art. 12, VIII)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Aluno(a)</th>
+                <th>Turma</th>
+                <th class="text-center">Faltas/Ano</th>
+                <th class="text-center">% Faltas</th>
+                <th class="text-center">PBF (75%)</th>
+                <th>Situação Legal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($alunosAno)): ?>
+                <tr><td colspan="6" class="text-center" style="padding: 20px; color: #94a3b8;">Nenhum aluno atingiu 40+ faltas no ano letivo.</td></tr>
+            <?php else: foreach ($alunosAno as $a): ?>
+                <tr style="<?= $a->notificar_ct ? 'background:#fff5f5' : '' ?>">
+                    <td><strong><?= e($a->nome) ?></strong><br><small style="color:#64748b"><?= e($a->matricula) ?></small></td>
+                    <td><?= e($a->turma_nome) ?></td>
+                    <td class="text-center text-red"><?= $a->total_faltas_ano ?></td>
+                    <td class="text-center">
+                        <span style="font-weight:700;color:<?= $a->pct_faltas >= 30 ? '#ef4444' : '#f59e0b' ?>"><?= $a->pct_faltas ?>%</span>
+                    </td>
+                    <td class="text-center">
+                        <?php if ($a->risco_pbf): ?>
+                            <span style="color:#ef4444;font-weight:600">⚠️ Risco</span>
+                        <?php else: ?>
+                            <span style="color:#10b981;font-weight:600">✅ OK</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php if ($a->notificar_ct): ?>
+                            <span style="color:#991b1b;font-weight:600">📋 NOTIFICAR CT</span>
+                        <?php else: ?>
+                            <span style="color:#b45309">⚠️ Monitorar</span>
+                        <?php endif; ?>
+                    </td>
                 </tr>
             <?php endforeach; endif; ?>
         </tbody>

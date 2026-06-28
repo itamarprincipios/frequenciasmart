@@ -160,7 +160,7 @@ include __DIR__ . '/../layout/header.php';
                         <?php if ($alerta->tipo === 'CONSECUTIVA'): ?>
                             <span class="badge badge-red">3 consecutivas</span>
                         <?php else: ?>
-                            <span class="badge badge-yellow">10 mensais</span>
+                            <span class="badge badge-yellow">8 mensais</span>
                         <?php endif; ?>
                     </td>
                     <td><?= e($alerta->mes_referencia) ?></td>
